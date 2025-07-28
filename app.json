@@ -2,6 +2,11 @@
   "expo": {
     "name": "Saas",
     "slug": "Saas",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "acc7408b-4613-4055-8df3-be48975b7073"
+      }
+    }
   }
 }
