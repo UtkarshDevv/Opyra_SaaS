@@ -6,6 +6,8 @@ import { Platform, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import "./global.css";
+
 export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>

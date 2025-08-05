@@ -129,41 +129,43 @@ const DashboardScreen = ({ navigation }) => {
   const renderModuleCard = (module) => (
     <TouchableOpacity
       key={module.id}
-      style={styles.moduleCard}
+      // style={styles.moduleCard}
+      className="w-[48%] mb-md  overflow-hidden rounded-lg"
       onPress={() => handleModulePress(module)}
       activeOpacity={0.8}
     >
       <LinearGradient
         colors={module.gradient}
-        style={styles.moduleGradient}
+        // style={styles.moduleGradient}
+        className="p-md min-h-[140px]"
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View style={styles.moduleHeader}>
-          <View style={styles.moduleIconContainer}>
+        <View className="flex-row items-center mb-sm">
+          <View className="w-[48] h-[48] rounded-[24px] bg-[rgba(255,255,255,0.2)] items-center justify-center mr-sm">
             <Ionicons name={module.icon} size={32} color={COLORS.white} />
           </View>
-          <View style={styles.moduleInfo}>
-            <Text style={styles.moduleTitle}>{module.title}</Text>
-            <Text style={styles.moduleSubtitle}>{module.subtitle}</Text>
+          <View className="flex-1">
+            <Text className="font-bold text-lg text-white mb-[2]">{module.title}</Text>
+            <Text className="text-xs font-regular text-[rgba(255,255,255,0.8)]">{module.subtitle}</Text>
           </View>
           {/* Show lock icon for LMS module */}
           {module.id === 'lms' && (
-            <View style={styles.authIndicator}>
+            <View className="absolute top-sm right-sm bg-[rgba(0,0,0,0.3)] p-xs rounded-sm">
               <Ionicons name="lock-closed" size={16} color="rgba(255, 255, 255, 0.8)" />
             </View>
           )}
         </View>
-        
-        <View style={styles.moduleApps}>
+
+        <View className="flex-row flex-wrap">
           {module.apps.slice(0, 2).map((app, index) => (
-            <View key={index} style={styles.appTag}>
-              <Text style={styles.appTagText}>{app}</Text>
+            <View key={index} className="bg-[rgba(255,255,255,0.2)] px-xs py-[2] rounded-[8px] mr-xs mb-xs">
+              <Text className="font-regular text-xs text-white">{app}</Text>
             </View>
           ))}
           {module.apps.length > 2 && (
-            <View style={styles.appTag}>
-              <Text style={styles.appTagText}>+{module.apps.length - 2} more</Text>
+            <View className="bg-[rgba(255,255,255,0.2)] px-xs py-[2] rounded-[8px] mr-xs mb-xs">
+              <Text className="font-regular text-xs text-white">+{module.apps.length - 2} more</Text>
             </View>
           )}
         </View>
@@ -172,7 +174,7 @@ const DashboardScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <Header 
         title="All your business on one platform"
         subtitle="Simple, efficient, yet affordable!"
@@ -181,34 +183,35 @@ const DashboardScreen = ({ navigation }) => {
         rightIcon="notifications-outline"
         onRightPress={() => navigation.navigate('Notifications')}
       />
-      
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Welcome back!</Text>
-          <Text style={styles.welcomeSubtitle}>
+
+      <ScrollView className="flex-1 p-md" showsVerticalScrollIndicator={false}>
+        <View className="mb-lg">
+          <Text className="font-bold text-xxl text-textPrimary mb-xs">Welcome back!</Text>
+          <Text className="font-regular text-md text-textSecondary" >
             Choose a module to get started with your business operations
           </Text>
+          {/* <Text className='text-lg text-red-500'>Hii this is below</Text> */}
         </View>
 
-        <View style={styles.modulesGrid}>
+        <View className="flex-row flex-wrap justify-between mb-xl">
           {modules.map(renderModuleCard)}
         </View>
 
-        <View style={styles.statsSection}>
-          <Card style={styles.statsCard}>
-            <Text style={styles.statsTitle}>Quick Stats</Text>
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>12</Text>
-                <Text style={styles.statLabel}>Active Apps</Text>
+        <View className="mb-xl">
+          <Card className="p-lg">
+            <Text className="font-bold text-lg text-textPrimary mb-md">Quick Stats</Text>
+            <View className="flex-row justify-around">
+              <View className="items-center">
+                <Text className="font-bold text-xxl text-primary mb-xs">12</Text>
+                <Text className="font-regular text-sm text-textSecondary">Active Apps</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>8</Text>
-                <Text style={styles.statLabel}>Modules</Text>
+              <View className="items-center">
+                <Text className="font-bold text-xxl text-primary mb-xs">8</Text>
+                <Text className="font-regular text-sm text-textSecondary">Modules</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>24/7</Text>
-                <Text style={styles.statLabel}>Support</Text>
+              <View className="items-center">
+                <Text className="font-bold text-xxl text-primary mb-xs">24/7</Text>
+                <Text className="font-regular text-sm text-textSecondary">Support</Text>
               </View>
             </View>
           </Card>
@@ -218,129 +221,6 @@ const DashboardScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flex: 1,
-    padding: SPACING.md,
-  },
-  welcomeSection: {
-    marginBottom: SPACING.lg,
-  },
-  welcomeTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.xxl,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  welcomeSubtitle: {
-    ...FONTS.regular,
-    fontSize: SIZES.md,
-    color: COLORS.textSecondary,
-    lineHeight: 22,
-  },
-  modulesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.xl,
-  },
-  moduleCard: {
-    width: '48%',
-    marginBottom: SPACING.md,
-    borderRadius: SIZES.radiusLg,
-    overflow: 'hidden',
-  },
-  moduleGradient: {
-    padding: SPACING.md,
-    minHeight: 140,
-  },
-  moduleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  moduleIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SPACING.sm,
-  },
-  moduleInfo: {
-    flex: 1,
-  },
-  moduleTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.white,
-    marginBottom: 2,
-  },
-  moduleSubtitle: {
-    ...FONTS.regular,
-    fontSize: SIZES.xs,
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  moduleApps: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  appTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: 2,
-    borderRadius: SIZES.radius,
-    marginRight: SPACING.xs,
-    marginBottom: SPACING.xs,
-  },
-  appTagText: {
-    ...FONTS.regular,
-    fontSize: SIZES.xs,
-    color: COLORS.white,
-  },
-  statsSection: {
-    marginBottom: SPACING.xl,
-  },
-  statsCard: {
-    padding: SPACING.lg,
-  },
-  statsTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    ...FONTS.bold,
-    fontSize: SIZES.xxl,
-    color: COLORS.primary,
-    marginBottom: SPACING.xs,
-  },
-  statLabel: {
-    ...FONTS.regular,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-  },
-  authIndicator: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    padding: SPACING.xs,
-    borderRadius: SIZES.radius,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default DashboardScreen; 
