@@ -1,29 +1,37 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/common/Header';
-import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
-import { COLORS, SIZES, FONTS, SPACING } from '../../constants/theme';
-import { createInvoice } from './accountingApi';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Header from "../../components/common/Header";
+import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
+import { COLORS, SIZES, FONTS, SPACING } from "../../constants/theme";
+import { createInvoice } from "./accountingApi";
 
 const CreateInvoiceScreen = ({ navigation }) => {
   const [invoiceData, setInvoiceData] = useState({
-    invoiceNumber: 'INV-2024-001',
-    customerName: '',
-    customerEmail: '',
-    customerPhone: '',
-    customerAddress: '',
-    customerGSTIN: '',
-    issueDate: new Date().toISOString().split('T')[0],
-    dueDate: '',
-    notes: '',
-    terms: 'Net 30',
-    currency: 'INR',
+    invoiceNumber: "INV-2024-001",
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    customerAddress: "",
+    customerGSTIN: "",
+    issueDate: new Date().toISOString().split("T")[0],
+    dueDate: "",
+    notes: "",
+    terms: "Net 30",
+    currency: "INR",
     isInterState: false,
     lineItems: [
-      { id: 1, description: '', quantity: 1, rate: 0, amount: 0, gstRate: 18 }
-    ]
+      { id: 1, description: "", quantity: 1, rate: 0, amount: 0, gstRate: 18 },
+    ],
   });
 
   const [subtotal, setSubtotal] = useState(0);
@@ -37,23 +45,23 @@ const CreateInvoiceScreen = ({ navigation }) => {
   const addLineItem = () => {
     const newItem = {
       id: invoiceData.lineItems.length + 1,
-      description: '',
+      description: "",
       quantity: 1,
       rate: 0,
       amount: 0,
-      gstRate: 18
+      gstRate: 18,
     };
     setInvoiceData({
       ...invoiceData,
-      lineItems: [...invoiceData.lineItems, newItem]
+      lineItems: [...invoiceData.lineItems, newItem],
     });
   };
 
   const updateLineItem = (id, field, value) => {
-    const updatedItems = invoiceData.lineItems.map(item => {
+    const updatedItems = invoiceData.lineItems.map((item) => {
       if (item.id === id) {
         const updatedItem = { ...item, [field]: value };
-        if (field === 'quantity' || field === 'rate') {
+        if (field === "quantity" || field === "rate") {
           updatedItem.amount = updatedItem.quantity * updatedItem.rate;
         }
         return updatedItem;
@@ -63,7 +71,7 @@ const CreateInvoiceScreen = ({ navigation }) => {
 
     setInvoiceData({
       ...invoiceData,
-      lineItems: updatedItems
+      lineItems: updatedItems,
     });
 
     calculateTotals(updatedItems);
@@ -71,10 +79,12 @@ const CreateInvoiceScreen = ({ navigation }) => {
 
   const removeLineItem = (id) => {
     if (invoiceData.lineItems.length > 1) {
-      const updatedItems = invoiceData.lineItems.filter(item => item.id !== id);
+      const updatedItems = invoiceData.lineItems.filter(
+        (item) => item.id !== id
+      );
       setInvoiceData({
         ...invoiceData,
-        lineItems: updatedItems
+        lineItems: updatedItems,
       });
       calculateTotals(updatedItems);
     }
@@ -82,19 +92,28 @@ const CreateInvoiceScreen = ({ navigation }) => {
 
   const calculateTotals = (items) => {
     const newSubtotal = items.reduce((sum, item) => sum + item.amount, 0);
-    
+
     // Calculate GST based on inter-state or intra-state
     if (invoiceData.isInterState) {
       // Inter-state: IGST only
-      const newIgst = items.reduce((sum, item) => sum + (item.amount * item.gstRate / 100), 0);
+      const newIgst = items.reduce(
+        (sum, item) => sum + (item.amount * item.gstRate) / 100,
+        0
+      );
       setIgst(newIgst);
       setCgst(0);
       setSgst(0);
       setTotal(newSubtotal + newIgst);
     } else {
       // Intra-state: CGST + SGST
-      const newCgst = items.reduce((sum, item) => sum + (item.amount * item.gstRate / 200), 0);
-      const newSgst = items.reduce((sum, item) => sum + (item.amount * item.gstRate / 200), 0);
+      const newCgst = items.reduce(
+        (sum, item) => sum + (item.amount * item.gstRate) / 200,
+        0
+      );
+      const newSgst = items.reduce(
+        (sum, item) => sum + (item.amount * item.gstRate) / 200,
+        0
+      );
       setCgst(newCgst);
       setSgst(newSgst);
       setIgst(0);
@@ -106,109 +125,129 @@ const CreateInvoiceScreen = ({ navigation }) => {
 
   const handleSave = async () => {
     if (!invoiceData.customerName || !invoiceData.customerEmail) {
-      Alert.alert('Error', 'Please fill in customer name and email');
+      Alert.alert("Error", "Please fill in customer name and email");
       return;
     }
 
     if (!invoiceData.customerGSTIN) {
-      Alert.alert('Warning', 'GSTIN is recommended for proper GST compliance');
+      Alert.alert("Warning", "GSTIN is recommended for proper GST compliance");
     }
 
     try {
       await createInvoice(invoiceData);
-      Alert.alert(
-        'Success',
-        'Invoice created successfully!',
-        [
-          { text: 'OK', onPress: () => navigation.goBack() }
-        ]
-      );
+      Alert.alert("Success", "Invoice created successfully!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
     } catch (err) {
-      Alert.alert('Error', 'Failed to create invoice.');
+      Alert.alert("Error", "Failed to create invoice.");
     }
   };
 
   const formatIndianCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
   };
 
   const renderLineItem = (item) => (
-    <Card key={item.id} style={styles.lineItemCard}>
-      <View style={styles.lineItemHeader}>
-        <Text style={styles.lineItemTitle}>Item {item.id}</Text>
+    <Card key={item.id} className="mb-lg p-lg rounded-lg shadow-sm bg-white">
+      {/* Header */}
+      <View className="flex-row justify-between items-center mb-md">
+        <Text className="font-bold text-lg text-textPrimary">
+          Item {item.id}
+        </Text>
         {invoiceData.lineItems.length > 1 && (
           <TouchableOpacity onPress={() => removeLineItem(item.id)}>
             <Ionicons name="trash-outline" size={20} color={COLORS.error} />
           </TouchableOpacity>
         )}
       </View>
-      
-      <View style={styles.lineItemFields}>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Description</Text>
+
+      {/* Fields */}
+      <View className="space-y-md">
+        {/* Description */}
+        <View className="mb-md">
+          <Text className="text-sm text-textSecondary mb-xs">Description</Text>
           <TextInput
-            style={styles.textInput}
+            className="border border-border rounded-sm p-md text-md text-textPrimary"
             value={item.description}
-            onChangeText={(text) => updateLineItem(item.id, 'description', text)}
+            onChangeText={(text) =>
+              updateLineItem(item.id, "description", text)
+            }
             placeholder="Enter item description"
             multiline
           />
         </View>
-        
-        <View style={styles.quantityRateRow}>
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Quantity</Text>
+
+        {/* Quantity / Rate / GST / Amount Row */}
+        <View className="flex-row flex-wrap gap-md">
+          {/* Quantity */}
+          <View className="flex-1 min-w-[100px]">
+            <Text className="text-sm text-textSecondary mb-xs">Quantity</Text>
             <TextInput
-              style={styles.numberInput}
+              className="border border-border rounded-sm p-md text-md text-textPrimary"
               value={item.quantity.toString()}
-              onChangeText={(text) => updateLineItem(item.id, 'quantity', parseFloat(text) || 0)}
+              onChangeText={(text) =>
+                updateLineItem(item.id, "quantity", parseFloat(text) || 0)
+              }
               placeholder="1"
               keyboardType="numeric"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Rate (₹)</Text>
+
+          {/* Rate */}
+          <View className="flex-1 min-w-[100px]">
+            <Text className="text-sm text-textSecondary mb-xs">Rate (₹)</Text>
             <TextInput
-              style={styles.numberInput}
+              className="border border-border rounded-sm p-md text-md text-textPrimary"
               value={item.rate.toString()}
-              onChangeText={(text) => updateLineItem(item.id, 'rate', parseFloat(text) || 0)}
+              onChangeText={(text) =>
+                updateLineItem(item.id, "rate", parseFloat(text) || 0)
+              }
               placeholder="0.00"
               keyboardType="numeric"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>GST Rate (%)</Text>
-            <View style={styles.gstRateSelector}>
-              {gstRates.map(rate => (
+
+          {/* GST Rate */}
+          <View className="flex-1 min-w-[120px]">
+            <Text className="text-sm text-textSecondary mb-xs">
+              GST Rate (%)
+            </Text>
+            <View className="flex-row gap-sm flex-wrap">
+              {gstRates.map((rate) => (
                 <TouchableOpacity
                   key={rate}
-                  style={[
-                    styles.gstRateButton,
-                    item.gstRate === rate && styles.gstRateButtonActive
-                  ]}
-                  onPress={() => updateLineItem(item.id, 'gstRate', rate)}
+                  className={`px-md py-xs rounded-md border ${
+                    item.gstRate === rate
+                      ? "bg-primary border-primary"
+                      : "bg-white border-border"
+                  }`}
+                  onPress={() => updateLineItem(item.id, "gstRate", rate)}
                 >
-                  <Text style={[
-                    styles.gstRateButtonText,
-                    item.gstRate === rate && styles.gstRateButtonTextActive
-                  ]}>
+                  <Text
+                    className={`text-sm ${
+                      item.gstRate === rate
+                        ? "text-white font-semibold"
+                        : "text-textPrimary"
+                    }`}
+                  >
                     {rate}%
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Amount</Text>
-            <Text style={styles.amountText}>{formatIndianCurrency(item.amount)}</Text>
+
+          {/* Amount */}
+          <View className="flex-1 min-w-[120px]">
+            <Text className="text-sm text-textSecondary mb-xs">Amount</Text>
+            <Text className="text-md font-semibold text-textPrimary">
+              {formatIndianCurrency(item.amount)}
+            </Text>
           </View>
         </View>
       </View>
@@ -216,8 +255,8 @@ const CreateInvoiceScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Header 
+    <View className="flex-1 bg-background">
+      <Header
         title="Create Invoice"
         subtitle="Generate a new invoice with GST"
         showBack={true}
@@ -225,101 +264,138 @@ const CreateInvoiceScreen = ({ navigation }) => {
         rightIcon="save-outline"
         onRightPress={handleSave}
       />
-      
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
+      <ScrollView className="flex-1 p-md" showsVerticalScrollIndicator={false}>
         {/* Customer Information */}
         <Card style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Customer Information</Text>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Customer Name *</Text>
+          <Text className="font-bold text-lg text-textPrimary mb-md">
+            Customer Information
+          </Text>
+
+          {/* Customer Name */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Customer Name *
+            </Text>
             <TextInput
-              style={styles.textInput}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
               value={invoiceData.customerName}
-              onChangeText={(text) => setInvoiceData({...invoiceData, customerName: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, customerName: text })
+              }
               placeholder="Enter customer name"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Email *</Text>
+
+          {/* Email */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Email *
+            </Text>
             <TextInput
-              style={styles.textInput}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
               value={invoiceData.customerEmail}
-              onChangeText={(text) => setInvoiceData({...invoiceData, customerEmail: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, customerEmail: text })
+              }
               placeholder="Enter customer email"
               keyboardType="email-address"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Phone</Text>
+
+          {/* Phone */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Phone
+            </Text>
             <TextInput
-              style={styles.textInput}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
               value={invoiceData.customerPhone}
-              onChangeText={(text) => setInvoiceData({...invoiceData, customerPhone: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, customerPhone: text })
+              }
               placeholder="Enter customer phone"
               keyboardType="phone-pad"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>GSTIN</Text>
+
+          {/* GSTIN */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              GSTIN
+            </Text>
             <TextInput
-              style={styles.textInput}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
               value={invoiceData.customerGSTIN}
-              onChangeText={(text) => setInvoiceData({...invoiceData, customerGSTIN: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, customerGSTIN: text })
+              }
               placeholder="Enter customer GSTIN (e.g., 27AAPFU0939F1Z5)"
               autoCapitalize="characters"
             />
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Address</Text>
+
+          {/* Address */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Address
+            </Text>
             <TextInput
-              style={[styles.textInput, styles.textArea]}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white h-20 text-top"
               value={invoiceData.customerAddress}
-              onChangeText={(text) => setInvoiceData({...invoiceData, customerAddress: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, customerAddress: text })
+              }
               placeholder="Enter customer address"
               multiline
               numberOfLines={3}
             />
           </View>
 
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Transaction Type</Text>
-            <View style={styles.transactionTypeSelector}>
+          {/* Transaction Type */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Transaction Type
+            </Text>
+            <View className="flex-row gap-sm">
+              {/* Intra-State */}
               <TouchableOpacity
-                style={[
-                  styles.transactionTypeButton,
-                  !invoiceData.isInterState && styles.transactionTypeButtonActive
-                ]}
+                className={`flex-1 p-sm border border-border rounded-sm items-center ${
+                  !invoiceData.isInterState ? "bg-primary border-primary" : ""
+                }`}
                 onPress={() => {
-                  setInvoiceData({...invoiceData, isInterState: false});
+                  setInvoiceData({ ...invoiceData, isInterState: false });
                   calculateTotals(invoiceData.lineItems);
                 }}
               >
-                <Text style={[
-                  styles.transactionTypeButtonText,
-                  !invoiceData.isInterState && styles.transactionTypeButtonTextActive
-                ]}>
+                <Text
+                  className={`font-medium text-sm ${
+                    !invoiceData.isInterState
+                      ? "text-white"
+                      : "text-textSecondary"
+                  }`}
+                >
                   Intra-State (CGST + SGST)
                 </Text>
               </TouchableOpacity>
+
+              {/* Inter-State */}
               <TouchableOpacity
-                style={[
-                  styles.transactionTypeButton,
-                  invoiceData.isInterState && styles.transactionTypeButtonActive
-                ]}
+                className={`flex-1 p-sm border border-border rounded-sm items-center ${
+                  invoiceData.isInterState ? "bg-primary border-primary" : ""
+                }`}
                 onPress={() => {
-                  setInvoiceData({...invoiceData, isInterState: true});
+                  setInvoiceData({ ...invoiceData, isInterState: true });
                   calculateTotals(invoiceData.lineItems);
                 }}
               >
-                <Text style={[
-                  styles.transactionTypeButtonText,
-                  invoiceData.isInterState && styles.transactionTypeButtonTextActive
-                ]}>
+                <Text
+                  className={`font-medium text-sm ${
+                    invoiceData.isInterState
+                      ? "text-white"
+                      : "text-textSecondary"
+                  }`}
+                >
                   Inter-State (IGST)
                 </Text>
               </TouchableOpacity>
@@ -328,117 +404,181 @@ const CreateInvoiceScreen = ({ navigation }) => {
         </Card>
 
         {/* Invoice Details */}
-        <Card style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Invoice Details</Text>
-          
-          <View style={styles.invoiceDetailsRow}>
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Invoice Number</Text>
+        <Card style={styles.sectionCard} className="mb-lg p-lg">
+          <Text className="font-bold text-lg text-textPrimary mb-md">
+            Invoice Details
+          </Text>
+
+          {/* Row 1 */}
+          <View className="flex-row justify-between">
+            {/* Invoice Number */}
+            <View className="mb-md">
+              <Text className="font-medium text-sm text-textPrimary mb-xs">
+                Invoice Number
+              </Text>
               <TextInput
-                style={styles.textInput}
+                className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
                 value={invoiceData.invoiceNumber}
-                onChangeText={(text) => setInvoiceData({...invoiceData, invoiceNumber: text})}
+                onChangeText={(text) =>
+                  setInvoiceData({ ...invoiceData, invoiceNumber: text })
+                }
                 placeholder="INV-2024-001"
               />
             </View>
-            
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Currency</Text>
+
+            {/* Currency */}
+            <View className="mb-md">
+              <Text className="font-medium text-sm text-textPrimary mb-xs">
+                Currency
+              </Text>
               <TextInput
-                style={styles.textInput}
+                className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
                 value={invoiceData.currency}
-                onChangeText={(text) => setInvoiceData({...invoiceData, currency: text})}
+                onChangeText={(text) =>
+                  setInvoiceData({ ...invoiceData, currency: text })
+                }
                 placeholder="INR"
               />
             </View>
           </View>
-          
-          <View style={styles.invoiceDetailsRow}>
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Issue Date</Text>
+
+          {/* Row 2 */}
+          <View className="flex-row justify-between">
+            {/* Issue Date */}
+            <View className="mb-md">
+              <Text className="font-medium text-sm text-textPrimary mb-xs">
+                Issue Date
+              </Text>
               <TextInput
-                style={styles.textInput}
+                className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
                 value={invoiceData.issueDate}
-                onChangeText={(text) => setInvoiceData({...invoiceData, issueDate: text})}
+                onChangeText={(text) =>
+                  setInvoiceData({ ...invoiceData, issueDate: text })
+                }
                 placeholder="YYYY-MM-DD"
               />
             </View>
-            
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Due Date</Text>
+
+            {/* Due Date */}
+            <View className="mb-md">
+              <Text className="font-medium text-sm text-textPrimary mb-xs">
+                Due Date
+              </Text>
               <TextInput
-                style={styles.textInput}
+                className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
                 value={invoiceData.dueDate}
-                onChangeText={(text) => setInvoiceData({...invoiceData, dueDate: text})}
+                onChangeText={(text) =>
+                  setInvoiceData({ ...invoiceData, dueDate: text })
+                }
                 placeholder="YYYY-MM-DD"
               />
             </View>
           </View>
-          
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Terms</Text>
+
+          {/* Terms */}
+          <View className="mb-md">
+            <Text className="font-medium text-sm text-textPrimary mb-xs">
+              Terms
+            </Text>
             <TextInput
-              style={styles.textInput}
+              className="border border-border rounded-sm p-sm text-md text-textPrimary bg-white"
               value={invoiceData.terms}
-              onChangeText={(text) => setInvoiceData({...invoiceData, terms: text})}
+              onChangeText={(text) =>
+                setInvoiceData({ ...invoiceData, terms: text })
+              }
               placeholder="Net 30"
             />
           </View>
         </Card>
 
         {/* Line Items */}
-        <Card style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Line Items</Text>
-            <TouchableOpacity style={styles.addButton} onPress={addLineItem}>
-              <Ionicons name="add-circle-outline" size={24} color={COLORS.primary} />
-              <Text style={styles.addButtonText}>Add Item</Text>
+        <Card style={styles.sectionCard} className="mb-lg p-lg">
+          {/* Header */}
+          <View className="flex-row justify-between items-center mb-md">
+            <Text className="font-bold text-lg text-textPrimary">
+              Line Items
+            </Text>
+
+            <TouchableOpacity
+              className="flex-row items-center text-primary rounded-full px-md py-sm"
+              onPress={addLineItem}
+            >
+              <Ionicons
+                name="add-circle-outline"
+                size={24}
+                color={COLORS.primary}
+              />
+              <Text className="ml-xs text-sm text-primary font-medium">
+                Add Item
+              </Text>
             </TouchableOpacity>
           </View>
-          
+
+          {/* Items List */}
           {invoiceData.lineItems.map(renderLineItem)}
         </Card>
 
         {/* Totals */}
         <Card style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Totals</Text>
-          
-          <View style={styles.totalsRow}>
-            <Text style={styles.totalsLabel}>Subtotal:</Text>
-            <Text style={styles.totalsValue}>{formatIndianCurrency(subtotal)}</Text>
+          <Text className="font-bold text-lg text-textPrimary mb-md">
+            Totals
+          </Text>
+
+          {/* Subtotal */}
+          <View className="flex-row justify-between mb-sm">
+            <Text className="text-md font-medium text-textSecondary">
+              Subtotal:
+            </Text>
+            <Text className="text-md font-medium text-textPrimary">
+              {formatIndianCurrency(subtotal)}
+            </Text>
           </View>
-          
+
+          {/* Taxes */}
           {!invoiceData.isInterState ? (
             <>
-              <View style={styles.totalsRow}>
-                <Text style={styles.totalsLabel}>CGST:</Text>
-                <Text style={styles.totalsValue}>{formatIndianCurrency(cgst)}</Text>
+              <View className="flex-row justify-between mb-sm">
+                <Text className="text-md text-textSecondary">CGST:</Text>
+                <Text className="text-md font-medium text-textPrimary">
+                  {formatIndianCurrency(cgst)}
+                </Text>
               </View>
-              <View style={styles.totalsRow}>
-                <Text style={styles.totalsLabel}>SGST:</Text>
-                <Text style={styles.totalsValue}>{formatIndianCurrency(sgst)}</Text>
+              <View className="flex-row justify-between mb-sm">
+                <Text className="text-md text-textSecondary">SGST:</Text>
+                <Text className="text-md font-medium text-textPrimary">
+                  {formatIndianCurrency(sgst)}
+                </Text>
               </View>
             </>
           ) : (
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>IGST:</Text>
-              <Text style={styles.totalsValue}>{formatIndianCurrency(igst)}</Text>
+            <View className="flex-row justify-between mb-sm">
+              <Text className="text-md text-textSecondary">IGST:</Text>
+              <Text className="text-md font-medium text-textPrimary">
+                {formatIndianCurrency(igst)}
+              </Text>
             </View>
           )}
-          
-          <View style={[styles.totalsRow, styles.totalRow]}>
-            <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalValue}>{formatIndianCurrency(total)}</Text>
+
+          {/* Total */}
+          <View className="flex-row justify-between mt-md border-t border-border pt-md">
+            <Text className="text-lg font-bold text-textPrimary">Total:</Text>
+            <Text className="text-lg font-bold text-primary">
+              {formatIndianCurrency(total)}
+            </Text>
           </View>
         </Card>
 
         {/* Notes */}
-        <Card style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Notes</Text>
+        <Card style={styles.sectionCard} className="mb-lg p-lg">
+          <Text className="font-bold text-lg text-textPrimary mb-md">
+            Notes
+          </Text>
           <TextInput
-            style={[styles.textInput, styles.textArea]}
+            className="border border-border rounded-sm p-md text-md text-textPrimary h-[96px]"
             value={invoiceData.notes}
-            onChangeText={(text) => setInvoiceData({...invoiceData, notes: text})}
+            onChangeText={(text) =>
+              setInvoiceData({ ...invoiceData, notes: text })
+            }
             placeholder="Enter any additional notes..."
             multiline
             numberOfLines={4}
@@ -446,15 +586,18 @@ const CreateInvoiceScreen = ({ navigation }) => {
         </Card>
 
         {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <Button 
-            title="Save Draft" 
+        <View className="flex-row justify-between gap-md mb-xl">
+          {" "}
+          {/* style={styles.actionButtons} */}
+          <Button
+            title="Save Draft"
             onPress={handleSave}
             style={styles.saveButton}
+            //className="flex-1 bg-lightGray"
             textStyle={styles.saveButtonText}
           />
-          <Button 
-            title="Send Invoice" 
+          <Button
+            title="Send Invoice"
             onPress={handleSave}
             style={styles.sendButton}
           />
@@ -465,192 +608,9 @@ const CreateInvoiceScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flex: 1,
-    padding: SPACING.md,
-  },
   sectionCard: {
     marginBottom: SPACING.lg,
     padding: SPACING.lg,
-  },
-  sectionTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  fieldGroup: {
-    marginBottom: SPACING.md,
-  },
-  fieldLabel: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: SIZES.radius,
-    padding: SPACING.sm,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
-  },
-  textArea: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
-  numberInput: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: SIZES.radius,
-    padding: SPACING.sm,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
-    textAlign: 'center',
-  },
-  invoiceDetailsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  transactionTypeSelector: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  transactionTypeButton: {
-    flex: 1,
-    padding: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: SIZES.radius,
-    alignItems: 'center',
-  },
-  transactionTypeButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  transactionTypeButtonText: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-  },
-  transactionTypeButtonTextActive: {
-    color: COLORS.white,
-  },
-  lineItemCard: {
-    marginBottom: SPACING.md,
-    padding: SPACING.md,
-  },
-  lineItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  lineItemTitle: {
-    ...FONTS.medium,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-  },
-  lineItemFields: {
-    gap: SPACING.sm,
-  },
-  quantityRateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: SPACING.sm,
-  },
-  gstRateSelector: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.xs,
-  },
-  gstRateButton: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: SIZES.radius,
-  },
-  gstRateButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  gstRateButtonText: {
-    ...FONTS.medium,
-    fontSize: SIZES.xs,
-    color: COLORS.textSecondary,
-  },
-  gstRateButtonTextActive: {
-    color: COLORS.white,
-  },
-  amountText: {
-    ...FONTS.bold,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    paddingTop: SPACING.sm,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.sm,
-  },
-  addButtonText: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.primary,
-    marginLeft: SPACING.xs,
-  },
-  totalsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: SPACING.sm,
-    marginTop: SPACING.sm,
-  },
-  totalsLabel: {
-    ...FONTS.medium,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-  },
-  totalsValue: {
-    ...FONTS.bold,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-  },
-  totalLabel: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.textPrimary,
-  },
-  totalValue: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.primary,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.xl,
-    gap: SPACING.md,
   },
   saveButton: {
     flex: 1,
@@ -664,4 +624,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateInvoiceScreen; 
+export default CreateInvoiceScreen;

@@ -5,16 +5,28 @@ import { COLORS, FONTS, SIZES, SPACING } from '../../constants/theme';
 
 const CalendarFeature = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    // <View style={styles.container}>
+    //   <Header 
+    //     title="Calendar Booking System"
+    //     subtitle="Manage your bookings and appointments"
+    //     showBack={true}
+    //     onBackPress={() => navigation.goBack()}
+    //   />
+    //   <View style={styles.content}>
+    //     <Text style={styles.title}>Calendar Booking Feature</Text>
+    //     <Text style={styles.subtitle}>This is a placeholder for the Calendar Booking System module. Add your calendar UI here.</Text>
+    //   </View>
+    // </View>
+    <View className="flex-1 bg-background">
       <Header 
         title="Calendar Booking System"
         subtitle="Manage your bookings and appointments"
         showBack={true}
         onBackPress={() => navigation.goBack()}
       />
-      <View style={styles.content}>
-        <Text style={styles.title}>Calendar Booking Feature</Text>
-        <Text style={styles.subtitle}>This is a placeholder for the Calendar Booking System module. Add your calendar UI here.</Text>
+      <View className="flex-1 justify-center items-center p-lg">
+        <Text className="font-bold text-xl text-primary mb-md">Calendar Booking Feature</Text>
+        <Text className="font-regular text-md text-textSecondary text-center">This is a placeholder for the Calendar Booking System module. Add your calendar UI here.</Text>
       </View>
     </View>
   );

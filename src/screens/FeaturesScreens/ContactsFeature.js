@@ -3,22 +3,45 @@ import { View, Text, StyleSheet } from 'react-native';
 import Header from '../../components/common/Header';
 import { COLORS, FONTS, SIZES, SPACING } from '../../constants/theme';
 
+// const ContactsFeature = ({ navigation }) => {
+//   return (
+//     <View style={styles.container}>
+//       <Header 
+//         title="Unlimited Contacts"
+//         subtitle="Manage all your contacts in one place"
+//         showBack={true}
+//         onBackPress={() => navigation.goBack()}
+//       />
+//       <View style={styles.content}>
+//         <Text style={styles.title}>Unlimited Contacts Feature</Text>
+//         <Text style={styles.subtitle}>This is a placeholder for the Unlimited Contacts module. Add your contacts UI here.</Text>
+//       </View>
+//     </View>
+//   );
+// };
+
 const ContactsFeature = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <Header 
+    <View className="flex-1 bg-background">
+      <Header
         title="Unlimited Contacts"
         subtitle="Manage all your contacts in one place"
         showBack={true}
         onBackPress={() => navigation.goBack()}
       />
-      <View style={styles.content}>
-        <Text style={styles.title}>Unlimited Contacts Feature</Text>
-        <Text style={styles.subtitle}>This is a placeholder for the Unlimited Contacts module. Add your contacts UI here.</Text>
+      <View className="flex-1 items-center justify-center p-lg">
+        <Text className="font-bold text-xl text-primary mb-md">
+          Unlimited Contacts Feature
+        </Text>
+        <Text className="font-regular text-md text-textSecondary text-center">
+          This is a placeholder for the Unlimited Contacts module. Add your
+          contacts UI here.
+        </Text>
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

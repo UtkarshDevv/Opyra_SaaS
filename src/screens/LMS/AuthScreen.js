@@ -1,18 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, SIZES, FONTS, SPACING } from '../../constants/theme';
-import { authApi } from '../../api/lmsApi';
-import { testBackendConnection, getBackendStatus } from '../../utils/testBackendConnection';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { COLORS, SIZES, FONTS, SPACING } from "../../constants/theme";
+import { authApi } from "../../api/lmsApi";
+import {
+  testBackendConnection,
+  getBackendStatus,
+} from "../../utils/testBackendConnection";
 
 const AuthScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
-  const [backendStatus, setBackendStatus] = useState({ status: 'checking', message: 'Checking backend...' });
+  const [backendStatus, setBackendStatus] = useState({
+    status: "checking",
+    message: "Checking backend...",
+  });
 
   useEffect(() => {
     checkBackendStatus();
@@ -20,33 +35,36 @@ const AuthScreen = ({ navigation }) => {
 
   const checkBackendStatus = async () => {
     try {
-      setBackendStatus({ status: 'checking', message: 'Checking backend connection...' });
+      setBackendStatus({
+        status: "checking",
+        message: "Checking backend connection...",
+      });
       const status = await getBackendStatus();
       setBackendStatus(status);
-      setIsBackendConnected(status.status === 'connected');
-      
-      if (status.status === 'disconnected') {
+      setIsBackendConnected(status.status === "connected");
+
+      if (status.status === "disconnected") {
         Alert.alert(
-          'Backend Connection Failed',
-          'Cannot connect to the backend server. Please make sure the server is running on http://localhost:4000',
+          "Backend Connection Failed",
+          "Cannot connect to the backend server. Please make sure the server is running on http://localhost:4000",
           [
             {
-              text: 'Use Demo Mode',
-              onPress: () => console.log('Using demo mode'),
-              style: 'default'
+              text: "Use Demo Mode",
+              onPress: () => console.log("Using demo mode"),
+              style: "default",
             },
             {
-              text: 'Retry',
-              onPress: checkBackendStatus
-            }
+              text: "Retry",
+              onPress: checkBackendStatus,
+            },
           ]
         );
       }
     } catch (error) {
-      console.error('Backend check failed:', error);
-      setBackendStatus({ 
-        status: 'error', 
-        message: 'Failed to check backend connection' 
+      console.error("Backend check failed:", error);
+      setBackendStatus({
+        status: "error",
+        message: "Failed to check backend connection",
       });
       setIsBackendConnected(false);
     }
@@ -54,7 +72,7 @@ const AuthScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      Alert.alert("Error", "Please enter both email and password");
       return;
     }
 
@@ -65,29 +83,35 @@ const AuthScreen = ({ navigation }) => {
         // Real backend login
         const response = await authApi.login({ email, password });
         const { user, token } = response.data;
-        
+
         // Navigate to LMS with real user data
-        navigation.replace('LMSDashboard', { 
-          userRole: user.role, 
+        navigation.replace("LMSDashboard", {
+          userRole: user.role,
           userData: user,
-          token: token
+          token: token,
         });
       } else {
         // Fallback to demo mode
         const user = authenticateUser(email, password);
         if (user) {
-          navigation.replace('LMSDashboard', { 
-            userRole: user.role, 
+          navigation.replace("LMSDashboard", {
+            userRole: user.role,
             userData: user,
-            isDemoMode: true
+            isDemoMode: true,
           });
         } else {
-          Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+          Alert.alert(
+            "Login Failed",
+            "Invalid email or password. Please try again."
+          );
         }
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Login Failed', error.message || 'An error occurred during login. Please try again.');
+      console.error("Login error:", error);
+      Alert.alert(
+        "Login Failed",
+        error.message || "An error occurred during login. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -96,9 +120,21 @@ const AuthScreen = ({ navigation }) => {
   // Demo authentication (fallback when backend is not available)
   const authenticateUser = (email, password) => {
     const credentials = {
-      admin: { email: 'admin@lms.com', password: 'admin123', name: 'Admin User' },
-      instructor: { email: 'instructor@lms.com', password: 'instructor123', name: 'Test Instructor' },
-      student: { email: 'student@lms.com', password: 'student123', name: 'Test Student' }
+      admin: {
+        email: "admin@lms.com",
+        password: "admin123",
+        name: "Admin User",
+      },
+      instructor: {
+        email: "instructor@lms.com",
+        password: "instructor123",
+        name: "Test Instructor",
+      },
+      student: {
+        email: "student@lms.com",
+        password: "student123",
+        name: "Test Student",
+      },
     };
 
     for (const [role, cred] of Object.entries(credentials)) {
@@ -111,15 +147,15 @@ const AuthScreen = ({ navigation }) => {
 
   const handleQuickLogin = (role) => {
     const credentials = {
-      admin: { email: 'admin@lms.com', password: 'admin123' },
-      instructor: { email: 'instructor@lms.com', password: 'instructor123' },
-      student: { email: 'student@lms.com', password: 'student123' }
+      admin: { email: "admin@lms.com", password: "admin123" },
+      instructor: { email: "instructor@lms.com", password: "instructor123" },
+      student: { email: "student@lms.com", password: "student123" },
     };
 
     const cred = credentials[role];
     setEmail(cred.email);
     setPassword(cred.password);
-    
+
     // Auto-login after a short delay
     setTimeout(() => {
       handleLogin();
@@ -128,157 +164,215 @@ const AuthScreen = ({ navigation }) => {
 
   const handleRegister = () => {
     Alert.alert(
-      'Registration',
-      'Registration feature is available. You can register through the API or use the demo credentials below.',
+      "Registration",
+      "Registration feature is available. You can register through the API or use the demo credentials below.",
       [
-        { text: 'OK' },
-        { text: 'Use Demo', onPress: () => handleQuickLogin('student') }
+        { text: "OK" },
+        { text: "Use Demo", onPress: () => handleQuickLogin("student") },
       ]
     );
   };
 
   const handleBackToDashboard = () => {
-    navigation.navigate('Dashboard');
+    navigation.navigate("Dashboard");
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={['#9C27B0', '#BA68C8']} style={styles.gradient}>
-        <View style={styles.content}>
-          {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={handleBackToDashboard}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.white} />
-          </TouchableOpacity>
-
-          {/* Backend Status Indicator */}
-          <View style={styles.statusContainer}>
-            <View style={[
-              styles.statusDot, 
-              { 
-                backgroundColor: 
-                  backendStatus.status === 'connected' ? '#4CAF50' : 
-                  backendStatus.status === 'checking' ? '#FF9800' : '#FF5722' 
-              }
-            ]} />
-            <Text style={styles.statusText}>
-              {backendStatus.status === 'connected' ? 'Backend Connected' : 
-               backendStatus.status === 'checking' ? 'Checking Backend...' : 
-               'Demo Mode'}
-            </Text>
-            {backendStatus.status === 'disconnected' && (
-              <TouchableOpacity style={styles.retryButton} onPress={checkBackendStatus}>
-                <Ionicons name="refresh" size={16} color={COLORS.white} />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="school" size={48} color={COLORS.white} />
-            </View>
-            <Text style={styles.title}>LMS Authentication</Text>
-            <Text style={styles.subtitle}>
-              {isBackendConnected ? 'Sign in to access learning platform' : 'Demo mode - using local data'}
-            </Text>
-          </View>
-
-          <View style={styles.formContainer}>
-            <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color={COLORS.textSecondary} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email Address"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholderTextColor={COLORS.textSecondary}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color={COLORS.textSecondary} />
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholderTextColor={COLORS.textSecondary}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Ionicons name={showPassword ? "eye-off" : "eye"} size={20} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity 
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
-              onPress={handleLogin}
-              disabled={isLoading}
+    <ScrollView>
+      <View style={styles.container}>
+        <LinearGradient colors={["#9C27B0", "#BA68C8"]} style={styles.gradient}>
+          <View style={styles.content}>
+            {/* Back Button */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={handleBackToDashboard}
             >
-              {isLoading ? (
-                <ActivityIndicator color={COLORS.white} size="small" />
-              ) : (
-                <Text style={styles.loginButtonText}>Sign In</Text>
+              <Ionicons name="arrow-back" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+
+            {/* Backend Status Indicator */}
+            <View style={styles.statusContainer}>
+              <View
+                style={[
+                  styles.statusDot,
+                  {
+                    backgroundColor:
+                      backendStatus.status === "connected"
+                        ? "#4CAF50"
+                        : backendStatus.status === "checking"
+                        ? "#FF9800"
+                        : "#FF5722",
+                  },
+                ]}
+              />
+              <Text style={styles.statusText}>
+                {backendStatus.status === "connected"
+                  ? "Backend Connected"
+                  : backendStatus.status === "checking"
+                  ? "Checking Backend..."
+                  : "Demo Mode"}
+              </Text>
+              {backendStatus.status === "disconnected" && (
+                <TouchableOpacity
+                  style={styles.retryButton}
+                  onPress={checkBackendStatus}
+                >
+                  <Ionicons name="refresh" size={16} color={COLORS.white} />
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.registerButtonText}>Create Account</Text>
-            </TouchableOpacity>
+            <View style={styles.header}>
+              <View style={styles.logoContainer}>
+                <Ionicons name="school" size={48} color={COLORS.white} />
+              </View>
+              <Text style={styles.title}>LMS Authentication</Text>
+              <Text style={styles.subtitle}>
+                {isBackendConnected
+                  ? "Sign in to access learning platform"
+                  : "Demo mode - using local data"}
+              </Text>
+            </View>
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={COLORS.textSecondary}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email Address"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholderTextColor={COLORS.textSecondary}
+                />
+              </View>
 
-          <View style={styles.quickLoginContainer}>
-            <Text style={styles.quickLoginTitle}>Quick Login (Demo)</Text>
-            <View style={styles.roleButtons}>
-              <TouchableOpacity 
-                style={[styles.roleButton, { backgroundColor: COLORS.error }]}
-                onPress={() => handleQuickLogin('admin')}
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color={COLORS.textSecondary}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholderTextColor={COLORS.textSecondary}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={20}
+                    color={COLORS.textSecondary}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.loginButton,
+                  isLoading && styles.loginButtonDisabled,
+                ]}
+                onPress={handleLogin}
+                disabled={isLoading}
               >
-                <Ionicons name="shield-outline" size={20} color={COLORS.white} />
-                <Text style={styles.roleButtonText}>Admin</Text>
+                {isLoading ? (
+                  <ActivityIndicator color={COLORS.white} size="small" />
+                ) : (
+                  <Text style={styles.loginButtonText}>Sign In</Text>
+                )}
               </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={[styles.roleButton, { backgroundColor: COLORS.primary }]}
-                onPress={() => handleQuickLogin('instructor')}
+              <TouchableOpacity
+                style={styles.registerButton}
+                onPress={handleRegister}
               >
-                <Ionicons name="person-outline" size={20} color={COLORS.white} />
-                <Text style={styles.roleButtonText}>Instructor</Text>
+                <Text style={styles.registerButtonText}>Create Account</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={[styles.roleButton, { backgroundColor: COLORS.success }]}
-                onPress={() => handleQuickLogin('student')}
-              >
-                <Ionicons name="school-outline" size={20} color={COLORS.white} />
-                <Text style={styles.roleButtonText}>Student</Text>
+              <TouchableOpacity style={styles.forgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
-          </View>
 
-          <View style={styles.credentialsContainer}>
-            <Text style={styles.credentialsTitle}>Demo Credentials:</Text>
-            <Text style={styles.credentialItem}>
-              <Text style={styles.credentialLabel}>Admin:</Text> admin@lms.com / admin123
-            </Text>
-            <Text style={styles.credentialItem}>
-              <Text style={styles.credentialLabel}>Instructor:</Text> instructor@lms.com / instructor123
-            </Text>
-            <Text style={styles.credentialItem}>
-              <Text style={styles.credentialLabel}>Student:</Text> student@lms.com / student123
-            </Text>
+            <View style={styles.quickLoginContainer}>
+              <Text style={styles.quickLoginTitle}>Quick Login (Demo)</Text>
+              <View style={styles.roleButtons}>
+                <TouchableOpacity
+                  style={[styles.roleButton, { backgroundColor: COLORS.error }]}
+                  onPress={() => handleQuickLogin("admin")}
+                >
+                  <Ionicons
+                    name="shield-outline"
+                    size={15}
+                    color={COLORS.white}
+                  />
+                  <Text style={styles.roleButtonText}>Admin</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.roleButton,
+                    { backgroundColor: COLORS.primary },
+                  ]}
+                  onPress={() => handleQuickLogin("instructor")}
+                >
+                  <Ionicons
+                    name="person-outline"
+                    size={15}
+                    color={COLORS.white}
+                  />
+                  <Text style={styles.roleButtonText}>Instructor</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.roleButton,
+                    { backgroundColor: COLORS.success },
+                  ]}
+                  onPress={() => handleQuickLogin("student")}
+                >
+                  <Ionicons
+                    name="school-outline"
+                    size={15}
+                    color={COLORS.white}
+                  />
+                  <Text style={styles.roleButtonText}>Student</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.credentialsContainer}>
+              <Text style={styles.credentialsTitle}>Demo Credentials:</Text>
+              <Text style={styles.credentialItem}>
+                <Text style={styles.credentialLabel}>Admin:</Text> admin@lms.com
+                / admin123
+              </Text>
+              <Text style={styles.credentialItem}>
+                <Text style={styles.credentialLabel}>Instructor:</Text>{" "}
+                instructor@lms.com / instructor123
+              </Text>
+              <Text style={styles.credentialItem}>
+                <Text style={styles.credentialLabel}>Student:</Text>{" "}
+                student@lms.com / student123
+              </Text>
+            </View>
           </View>
-        </View>
-      </LinearGradient>
-    </View>
+        </LinearGradient>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -292,18 +386,18 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: SPACING.xl,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 50,
     left: SPACING.lg,
     zIndex: 1,
     padding: SPACING.sm,
   },
   statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: SPACING.lg,
   },
   statusDot: {
@@ -318,30 +412,30 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: SPACING.xxl,
   },
   logoContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: SPACING.lg,
   },
   title: {
     ...FONTS.bold,
     fontSize: SIZES.xxl,
     color: COLORS.white,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: SPACING.sm,
   },
   subtitle: {
     ...FONTS.regular,
     fontSize: SIZES.md,
-    color: COLORS.white + 'CC',
-    textAlign: 'center',
+    color: COLORS.white + "CC",
+    textAlign: "center",
   },
   formContainer: {
     backgroundColor: COLORS.white,
@@ -355,8 +449,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: SIZES.radius,
@@ -376,7 +470,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: SIZES.radius,
     paddingVertical: SPACING.md,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: SPACING.sm,
     marginBottom: SPACING.md,
   },
@@ -392,7 +486,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: SIZES.radius,
     paddingVertical: SPACING.md,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: SPACING.sm,
     marginBottom: SPACING.md,
   },
@@ -402,7 +496,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   forgotPassword: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   forgotPasswordText: {
     ...FONTS.medium,
@@ -410,7 +504,8 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   quickLoginContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // overflow:"hidden",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: SIZES.radius,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
@@ -419,21 +514,22 @@ const styles = StyleSheet.create({
     ...FONTS.bold,
     fontSize: SIZES.md,
     color: COLORS.white,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: SPACING.md,
   },
   roleButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    gap: "5",
+    justifyContent: "space-around",
   },
   roleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
+    flexDirection: "row",
+
+    alignItems: "center",
+    paddingHorizontal: SPACING.sm,
     paddingVertical: SPACING.sm,
     borderRadius: SIZES.radius,
-    minWidth: 100,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   roleButtonText: {
     ...FONTS.medium,
@@ -442,7 +538,7 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.xs,
   },
   credentialsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: SIZES.radius,
     padding: SPACING.md,
   },
@@ -450,14 +546,14 @@ const styles = StyleSheet.create({
     ...FONTS.bold,
     fontSize: SIZES.sm,
     color: COLORS.white,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: SPACING.sm,
   },
   credentialItem: {
     ...FONTS.regular,
     fontSize: SIZES.xs,
-    color: COLORS.white + 'CC',
-    textAlign: 'center',
+    color: COLORS.white + "CC",
+    textAlign: "center",
     marginBottom: SPACING.xs,
   },
   credentialLabel: {
@@ -469,4 +565,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthScreen; 
+export default AuthScreen;

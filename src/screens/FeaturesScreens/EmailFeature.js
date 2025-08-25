@@ -5,16 +5,16 @@ import { COLORS, FONTS, SIZES, SPACING } from '../../constants/theme';
 
 const EmailFeature = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <Header 
         title="Email Marketing"
         subtitle="Automate and track your email campaigns"
         showBack={true}
         onBackPress={() => navigation.goBack()}
       />
-      <View style={styles.content}>
-        <Text style={styles.title}>Email Marketing Feature</Text>
-        <Text style={styles.subtitle}>This is a placeholder for the Email Marketing module. Add your email marketing UI here.</Text>
+      <View className="flex-1 justify-center items-center p-lg">
+        <Text className="font-bold text-xl text-primary mb-md">Email Marketing Feature</Text>
+        <Text className="font-regular text-md text-textSecondary text-center">This is a placeholder for the Email Marketing module. Add your email marketing UI here.</Text>
       </View>
     </View>
   );

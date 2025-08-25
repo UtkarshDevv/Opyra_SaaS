@@ -10,38 +10,72 @@ const pipelineData = [
 
 const CRMFeatureScreen = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>CRM</Text>
+    // <View style={styles.container}>
+    //   <Text style={styles.header}>CRM</Text>
+
+    //   {/* KPI Cards */}
+    //   <View style={styles.kpiRow}>
+    //     <View style={styles.kpiCard}>
+    //       <Text style={styles.kpiNumber}>24</Text>
+    //       <Text style={styles.kpiLabel}>Leads</Text>
+    //     </View>
+    //     <View style={styles.kpiCard}>
+    //       <Text style={styles.kpiNumber}>14</Text>
+    //       <Text style={styles.kpiLabel}>Opportunities</Text>
+    //     </View>
+    //   </View>
+
+    //   {/* Pipeline */}
+    //   <Text style={styles.sectionTitle}>Pipeline</Text>
+    //   <FlatList
+    //     data={pipelineData}
+    //     horizontal
+    //     keyExtractor={item => item.id}
+    //     renderItem={({ item }) => (
+    //       <View style={styles.pipelineCard}>
+    //         <Text style={styles.pipelineName}>{item.name}</Text>
+    //         <Text style={styles.pipelineCount}>{item.count}</Text>
+    //       </View>
+    //     )}
+    //   />
+
+    //   {/* Action Button */}
+    //   <TouchableOpacity style={styles.actionButton}>
+    //     <Text style={styles.actionButtonText}>+ New Lead</Text>
+    //   </TouchableOpacity>
+    // </View>
+    <View className="flex-1 p-[16] bg-[#fff]">
+      <Text className="text-[24] font-bold mb-[16]">CRM</Text>
 
       {/* KPI Cards */}
-      <View style={styles.kpiRow}>
-        <View style={styles.kpiCard}>
-          <Text style={styles.kpiNumber}>24</Text>
-          <Text style={styles.kpiLabel}>Leads</Text>
+      <View className="flex-row justify-between mb-[20]">
+        <View className="bg-[#f5f5f5] rounded-sm p-[16] w-[48%]">
+          <Text className="text-[28] font-medium text-center">24</Text>
+          <Text className="font-regular text-[#666] text-center">Leads</Text>
         </View>
-        <View style={styles.kpiCard}>
-          <Text style={styles.kpiNumber}>14</Text>
-          <Text style={styles.kpiLabel}>Opportunities</Text>
+        <View className="bg-[#f5f5f5] rounded-sm p-[16] w-[48%]">
+          <Text className="text-[28] font-medium text-center">14</Text>
+          <Text className="font-regular text-[#666] text-center">Opportunities</Text>
         </View>
       </View>
 
       {/* Pipeline */}
-      <Text style={styles.sectionTitle}>Pipeline</Text>
+      <Text className="text-[18] font-medium mb-sm">Pipeline</Text>
       <FlatList
         data={pipelineData}
         horizontal
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.pipelineCard}>
-            <Text style={styles.pipelineName}>{item.name}</Text>
-            <Text style={styles.pipelineCount}>{item.count}</Text>
+          <View className="bg-[#e0f7fa] rounded-sm p-[16] mr-[12] items-center">
+            <Text className="text-[16] font-medium">{item.name}</Text>
+            <Text className="font-bold text-[22] mt-1">{item.count}</Text>
           </View>
         )}
       />
 
       {/* Action Button */}
-      <TouchableOpacity style={styles.actionButton}>
-        <Text style={styles.actionButtonText}>+ New Lead</Text>
+      <TouchableOpacity className="bg-[#2196F3] p-[14] rounded-sm items-center absolute bottom-[20] right-[20]">
+        <Text className="text-[#fff] text-md font-medium">+ New Lead</Text>
       </TouchableOpacity>
     </View>
   );

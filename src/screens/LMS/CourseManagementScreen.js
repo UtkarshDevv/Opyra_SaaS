@@ -1,52 +1,64 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, ScrollView, Image, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import Header from '../../components/common/Header';
-import Card from '../../components/common/Card';
-import { COLORS, SIZES, FONTS, SPACING } from '../../constants/theme';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import Header from "../../components/common/Header";
+import Card from "../../components/common/Card";
+import { COLORS, SIZES, FONTS, SPACING } from "../../constants/theme";
 
 const CourseManagementScreen = ({ navigation, route }) => {
   const [courses, setCourses] = useState([
     {
       id: 1,
-      title: 'React Native Basics',
-      description: 'Learn the fundamentals of React Native development',
-      instructor: 'Jane Smith',
-      thumbnail: 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=React+Native',
-      category: 'Programming',
-      duration: '8 weeks',
+      title: "React Native Basics",
+      description: "Learn the fundamentals of React Native development",
+      instructor: "Jane Smith",
+      thumbnail:
+        "https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=React+Native",
+      category: "Programming",
+      duration: "8 weeks",
       lessons: 12,
       students: 45,
-      price: '$99',
-      status: 'published'
+      price: "$99",
+      status: "published",
     },
     {
       id: 2,
-      title: 'Advanced JavaScript',
-      description: 'Master advanced JavaScript concepts and patterns',
-      instructor: 'John Wilson',
-      thumbnail: 'https://via.placeholder.com/300x200/F39C12/FFFFFF?text=JavaScript',
-      category: 'Programming',
-      duration: '6 weeks',
+      title: "Advanced JavaScript",
+      description: "Master advanced JavaScript concepts and patterns",
+      instructor: "John Wilson",
+      thumbnail:
+        "https://via.placeholder.com/300x200/F39C12/FFFFFF?text=JavaScript",
+      category: "Programming",
+      duration: "6 weeks",
       lessons: 15,
       students: 32,
-      price: '$79',
-      status: 'draft'
+      price: "$79",
+      status: "draft",
     },
     {
       id: 3,
-      title: 'UI/UX Design Principles',
-      description: 'Learn modern UI/UX design principles and tools',
-      instructor: 'Sarah Brown',
-      thumbnail: 'https://via.placeholder.com/300x200/E74C3C/FFFFFF?text=UI+UX',
-      category: 'Design',
-      duration: '10 weeks',
+      title: "UI/UX Design Principles",
+      description: "Learn modern UI/UX design principles and tools",
+      instructor: "Sarah Brown",
+      thumbnail: "https://via.placeholder.com/300x200/E74C3C/FFFFFF?text=UI+UX",
+      category: "Design",
+      duration: "10 weeks",
       lessons: 10,
       students: 28,
-      price: '$129',
-      status: 'published'
-    }
+      price: "$129",
+      status: "published",
+    },
   ]);
 
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -57,9 +69,13 @@ const CourseManagementScreen = ({ navigation, route }) => {
   const pickImage = async () => {
     try {
       // Request permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please grant camera roll permissions to upload images.');
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please grant camera roll permissions to upload images."
+        );
         return;
       }
 
@@ -74,13 +90,13 @@ const CourseManagementScreen = ({ navigation, route }) => {
       if (!result.canceled && result.assets[0]) {
         setUploadedImage(result.assets[0].uri);
         // Automatically update the course thumbnail
-        setSelectedCourse(prev => ({
+        setSelectedCourse((prev) => ({
           ...prev,
-          thumbnail: result.assets[0].uri
+          thumbnail: result.assets[0].uri,
         }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      Alert.alert("Error", "Failed to pick image. Please try again.");
     }
   };
 
@@ -89,8 +105,11 @@ const CourseManagementScreen = ({ navigation, route }) => {
     try {
       // Request permissions
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please grant camera permissions to take photos.');
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please grant camera permissions to take photos."
+        );
         return;
       }
 
@@ -104,91 +123,203 @@ const CourseManagementScreen = ({ navigation, route }) => {
       if (!result.canceled && result.assets[0]) {
         setUploadedImage(result.assets[0].uri);
         // Automatically update the course thumbnail
-        setSelectedCourse(prev => ({
+        setSelectedCourse((prev) => ({
           ...prev,
-          thumbnail: result.assets[0].uri
+          thumbnail: result.assets[0].uri,
         }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to take photo. Please try again.');
+      Alert.alert("Error", "Failed to take photo. Please try again.");
     }
   };
 
   // Show image picker options
   const showImagePickerOptions = () => {
     Alert.alert(
-      'Choose Image Source',
-      'Select how you want to add a course thumbnail',
+      "Choose Image Source",
+      "Select how you want to add a course thumbnail",
       [
         {
-          text: 'Camera',
+          text: "Camera",
           onPress: takePhoto,
         },
         {
-          text: 'Photo Library',
+          text: "Photo Library",
           onPress: pickImage,
         },
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
       ]
     );
   };
 
+  // const renderCourseItem = ({ item }) => (
+  //   <TouchableOpacity
+  //     style={styles.courseCard}
+  //     onPress={() => setSelectedCourse(item)}
+  //     activeOpacity={0.8}
+  //   >
+  //     <Image source={{ uri: item.thumbnail }} style={styles.courseThumbnail} />
+  //     <View style={styles.courseContent}>
+  //       <View style={styles.courseHeader}>
+  //         <Text style={styles.courseTitle}>{item.title}</Text>
+  //         <View
+  //           style={[
+  //             styles.statusBadge,
+  //             {
+  //               backgroundColor:
+  //                 item.status === "published" ? COLORS.success : COLORS.warning,
+  //             },
+  //           ]}
+  //         >
+  //           <Text style={styles.statusText}>{item.status}</Text>
+  //         </View>
+  //       </View>
+
+  //       <Text style={styles.courseDescription} numberOfLines={2}>
+  //         {item.description}
+  //       </Text>
+
+  //       <View style={styles.courseMeta}>
+  //         <Text style={styles.courseInstructor}>by {item.instructor}</Text>
+  //         <Text style={styles.courseCategory}>{item.category}</Text>
+  //       </View>
+
+  //       <View style={styles.courseStats}>
+  //         <View style={styles.statItem}>
+  //           <Ionicons
+  //             name="time-outline"
+  //             size={14}
+  //             color={COLORS.textSecondary}
+  //           />
+  //           <Text style={styles.statText}>{item.duration}</Text>
+  //         </View>
+  //         <View style={styles.statItem}>
+  //           <Ionicons
+  //             name="library-outline"
+  //             size={14}
+  //             color={COLORS.textSecondary}
+  //           />
+  //           <Text style={styles.statText}>{item.lessons} lessons</Text>
+  //         </View>
+  //         <View style={styles.statItem}>
+  //           <Ionicons
+  //             name="people-outline"
+  //             size={14}
+  //             color={COLORS.textSecondary}
+  //           />
+  //           <Text style={styles.statText}>{item.students} students</Text>
+  //         </View>
+  //       </View>
+
+  //       <View style={styles.courseFooter}>
+  //         <Text style={styles.coursePrice}>{item.price}</Text>
+  //         <View style={styles.actionButtons}>
+  //           <TouchableOpacity
+  //             style={styles.actionButton}
+  //             onPress={() => handleEditCourse(item)}
+  //           >
+  //             <Ionicons
+  //               name="create-outline"
+  //               size={16}
+  //               color={COLORS.primary}
+  //             />
+  //           </TouchableOpacity>
+  //           <TouchableOpacity
+  //             style={styles.actionButton}
+  //             onPress={() => handleDeleteCourse(item.id)}
+  //           >
+  //             <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     </View>
+  //   </TouchableOpacity>
+  // );
+
   const renderCourseItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.courseCard} 
+    <TouchableOpacity
+      className="bg-white rounded-sm overflow-hidden shadow-custom"
       onPress={() => setSelectedCourse(item)}
       activeOpacity={0.8}
     >
-      <Image source={{ uri: item.thumbnail }} style={styles.courseThumbnail} />
-      <View style={styles.courseContent}>
-        <View style={styles.courseHeader}>
-          <Text style={styles.courseTitle}>{item.title}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: item.status === 'published' ? COLORS.success : COLORS.warning }]}>
-            <Text style={styles.statusText}>{item.status}</Text>
+      <Image source={{ uri: item.thumbnail }} className="w-full h-[150px]" />
+
+      <View className="p-md">
+        {/* Header */}
+        <View className="flex-row justify-between items-start mb-sm">
+          <Text className="font-bold text-lg text-textPrimary flex-1 mr-sm">
+            {item.title}
+          </Text>
+          <View
+            className={`px-sm py-xs rounded-sm ${
+              item.status === "published" ? "bg-success" : "bg-warning"
+            }`}
+          >
+            <Text className="font-medium text-xs text-white">
+              {item.status}
+            </Text>
           </View>
         </View>
-        
-        <Text style={styles.courseDescription} numberOfLines={2}>
+
+        {/* Description */}
+        <Text
+          className="font-regular text-sm text-textSecondary mb-sm"
+          numberOfLines={2}
+        >
           {item.description}
         </Text>
-        
-        <View style={styles.courseMeta}>
-          <Text style={styles.courseInstructor}>by {item.instructor}</Text>
-          <Text style={styles.courseCategory}>{item.category}</Text>
+
+        {/* Meta */}
+        <View className="flex-row justify-between mb-sm">
+          <Text className="font-medium text-sm text-primary">
+            by {item.instructor}
+          </Text>
+          <Text className="font-medium text-sm text-textSecondary">
+            {item.category}
+          </Text>
         </View>
-        
-        <View style={styles.courseStats}>
-          <View style={styles.statItem}>
-            <Ionicons name="time-outline" size={14} color={COLORS.textSecondary} />
-            <Text style={styles.statText}>{item.duration}</Text>
+
+        {/* Stats */}
+        <View className="flex-row mb-sm">
+          <View className="flex-row items-center mr-md">
+            <Ionicons name="time-outline" size={14} color="#6C757D" />
+            <Text className="font-regular text-xs text-textSecondary ml-xs">
+              {item.duration}
+            </Text>
           </View>
-          <View style={styles.statItem}>
-            <Ionicons name="library-outline" size={14} color={COLORS.textSecondary} />
-            <Text style={styles.statText}>{item.lessons} lessons</Text>
+          <View className="flex-row items-center mr-md">
+            <Ionicons name="library-outline" size={14} color="#6C757D" />
+            <Text className="font-regular text-xs text-textSecondary ml-xs">
+              {item.lessons} lessons
+            </Text>
           </View>
-          <View style={styles.statItem}>
-            <Ionicons name="people-outline" size={14} color={COLORS.textSecondary} />
-            <Text style={styles.statText}>{item.students} students</Text>
+          <View className="flex-row items-center mr-md">
+            <Ionicons name="people-outline" size={14} color="#6C757D" />
+            <Text className="font-regular text-xs text-textSecondary ml-xs">
+              {item.students} students
+            </Text>
           </View>
         </View>
-        
-        <View style={styles.courseFooter}>
-          <Text style={styles.coursePrice}>{item.price}</Text>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity 
-              style={styles.actionButton} 
+
+        {/* Footer */}
+        <View className="flex-row justify-between items-center">
+          <Text className="font-bold text-md text-primary">{item.price}</Text>
+
+          <View className="flex-row">
+            <TouchableOpacity
+              className="p-xs ml-xs"
               onPress={() => handleEditCourse(item)}
             >
-              <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+              <Ionicons name="create-outline" size={16} color="#714B67" />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.actionButton} 
+            <TouchableOpacity
+              className="p-xs ml-xs"
               onPress={() => handleDeleteCourse(item.id)}
             >
-              <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+              <Ionicons name="trash-outline" size={16} color="#DC3545" />
             </TouchableOpacity>
           </View>
         </View>
@@ -204,45 +335,49 @@ const CourseManagementScreen = ({ navigation, route }) => {
 
   const handleDeleteCourse = (courseId) => {
     Alert.alert(
-      'Delete Course',
-      'Are you sure you want to delete this course?',
+      "Delete Course",
+      "Are you sure you want to delete this course?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: () => {
-            setCourses(courses.filter(course => course.id !== courseId));
+            setCourses(courses.filter((course) => course.id !== courseId));
             if (selectedCourse?.id === courseId) {
               setSelectedCourse(null);
               setUploadedImage(null);
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
 
   const handleSaveCourse = () => {
     if (!selectedCourse?.title || !selectedCourse?.description) {
-      Alert.alert('Error', 'Please fill in the course title and description.');
+      Alert.alert("Error", "Please fill in the course title and description.");
       return;
     }
 
     if (isEditing) {
       // Update existing course
-      setCourses(courses.map(course => 
-        course.id === selectedCourse.id ? selectedCourse : course
-      ));
+      setCourses(
+        courses.map((course) =>
+          course.id === selectedCourse.id ? selectedCourse : course
+        )
+      );
     } else {
       // Add new course
       const newCourse = {
         ...selectedCourse,
         id: Date.now(),
-        status: 'draft',
+        status: "draft",
         lessons: 0,
         students: 0,
-        thumbnail: uploadedImage || 'https://via.placeholder.com/300x200/9C27B0/FFFFFF?text=Course'
+        thumbnail:
+          uploadedImage ||
+          "https://via.placeholder.com/300x200/9C27B0/FFFFFF?text=Course",
       };
       setCourses([...courses, newCourse]);
     }
@@ -250,105 +385,304 @@ const CourseManagementScreen = ({ navigation, route }) => {
     setSelectedCourse(null);
     setUploadedImage(null);
     setIsEditing(false);
-    Alert.alert('Success', isEditing ? 'Course updated successfully!' : 'Course created successfully!');
+    Alert.alert(
+      "Success",
+      isEditing
+        ? "Course updated successfully!"
+        : "Course created successfully!"
+    );
   };
 
+  // const renderCourseForm = () => (
+  //   <Card style={styles.formCard}>
+  //     <Text style={styles.formTitle}>
+  //       {isEditing ? "Edit Course" : "Add New Course"}
+  //     </Text>
+
+  //     {/* Image Upload Section */}
+  //     <View style={styles.imageSection}>
+  //       <Text style={styles.sectionLabel}>Course Thumbnail</Text>
+
+  //       {uploadedImage ? (
+  //         <View style={styles.imagePreviewContainer}>
+  //           <Image
+  //             source={{ uri: uploadedImage }}
+  //             style={styles.imagePreview}
+  //           />
+  //           <TouchableOpacity
+  //             style={styles.changeImageButton}
+  //             onPress={showImagePickerOptions}
+  //           >
+  //             <Ionicons name="camera-outline" size={20} color={COLORS.white} />
+  //             <Text style={styles.changeImageText}>Change Image</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       ) : (
+  //         <TouchableOpacity
+  //           style={styles.uploadButton}
+  //           onPress={showImagePickerOptions}
+  //         >
+  //           <Ionicons name="camera-outline" size={32} color={COLORS.primary} />
+  //           <Text style={styles.uploadText}>Upload Course Thumbnail</Text>
+  //           <Text style={styles.uploadSubtext}>
+  //             Tap to select from camera or gallery
+  //           </Text>
+  //         </TouchableOpacity>
+  //       )}
+  //     </View>
+
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Course Title"
+  //       value={selectedCourse?.title || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, title: text })
+  //       }
+  //     />
+
+  //     <TextInput
+  //       style={[styles.input, styles.textArea]}
+  //       placeholder="Course Description"
+  //       value={selectedCourse?.description || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, description: text })
+  //       }
+  //       multiline
+  //       numberOfLines={4}
+  //     />
+
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Instructor Name"
+  //       value={selectedCourse?.instructor || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, instructor: text })
+  //       }
+  //     />
+
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Category"
+  //       value={selectedCourse?.category || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, category: text })
+  //       }
+  //     />
+
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Duration (e.g., 8 weeks)"
+  //       value={selectedCourse?.duration || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, duration: text })
+  //       }
+  //     />
+
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Price"
+  //       value={selectedCourse?.price || ""}
+  //       onChangeText={(text) =>
+  //         setSelectedCourse({ ...selectedCourse, price: text })
+  //       }
+  //     />
+
+  //     <View style={styles.formButtons}>
+  //       <TouchableOpacity style={styles.saveButton} onPress={handleSaveCourse}>
+  //         <Text style={styles.saveButtonText}>Save Course</Text>
+  //       </TouchableOpacity>
+  //       <TouchableOpacity
+  //         style={styles.cancelButton}
+  //         onPress={() => {
+  //           setSelectedCourse(null);
+  //           setUploadedImage(null);
+  //           setIsEditing(false);
+  //         }}
+  //       >
+  //         <Text style={styles.cancelButtonText}>Cancel</Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   </Card>
+  // );
+
   const renderCourseForm = () => (
-    <Card style={styles.formCard}>
-      <Text style={styles.formTitle}>{isEditing ? 'Edit Course' : 'Add New Course'}</Text>
-      
+    <Card className="mb-lg">
+      <Text className="font-bold text-lg text-textPrimary mb-md">
+        {isEditing ? "Edit Course" : "Add New Course"}
+      </Text>
+
       {/* Image Upload Section */}
-      <View style={styles.imageSection}>
-        <Text style={styles.sectionLabel}>Course Thumbnail</Text>
-        
+      <View className="mb-md">
+        <Text className="font-medium text-md text-textPrimary mb-sm">
+          Course Thumbnail
+        </Text>
+
         {uploadedImage ? (
-          <View style={styles.imagePreviewContainer}>
-            <Image source={{ uri: uploadedImage }} style={styles.imagePreview} />
-            <TouchableOpacity 
-              style={styles.changeImageButton}
+          <View className="relative rounded-sm overflow-hidden">
+            <Image
+              source={{ uri: uploadedImage }}
+              className="w-full h-[200px] rounded-sm"
+            />
+            <TouchableOpacity
+              className="absolute bottom-sm right-sm bg-black/70 flex-row items-center px-sm py-xs rounded-sm"
               onPress={showImagePickerOptions}
             >
-              <Ionicons name="camera-outline" size={20} color={COLORS.white} />
-              <Text style={styles.changeImageText}>Change Image</Text>
+              <Ionicons name="camera-outline" size={20} color="#FFFFFF" />
+              <Text className="font-medium text-sm text-white ml-xs">
+                Change Image
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity 
-            style={styles.uploadButton}
+          <TouchableOpacity
+            className="border-2 border-border border-dashed rounded-sm p-xl items-center bg-background"
             onPress={showImagePickerOptions}
           >
-            <Ionicons name="camera-outline" size={32} color={COLORS.primary} />
-            <Text style={styles.uploadText}>Upload Course Thumbnail</Text>
-            <Text style={styles.uploadSubtext}>Tap to select from camera or gallery</Text>
+            <Ionicons name="camera-outline" size={32} color="#714B67" />
+            <Text className="font-medium text-md text-primary mt-sm">
+              Upload Course Thumbnail
+            </Text>
+            <Text className="font-regular text-sm text-textSecondary mt-xs">
+              Tap to select from camera or gallery
+            </Text>
           </TouchableOpacity>
         )}
       </View>
-      
+
+      {/* Form Inputs */}
       <TextInput
-        style={styles.input}
+        className="border border-border rounded-sm p-sm mb-sm font-regular"
         placeholder="Course Title"
-        value={selectedCourse?.title || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, title: text})}
+        value={selectedCourse?.title || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, title: text })
+        }
       />
-      
+
       <TextInput
-        style={[styles.input, styles.textArea]}
+        className="border border-border rounded-sm p-sm mb-sm font-regular h-[100px] text-top"
         placeholder="Course Description"
-        value={selectedCourse?.description || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, description: text})}
+        value={selectedCourse?.description || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, description: text })
+        }
         multiline
         numberOfLines={4}
       />
-      
+
       <TextInput
-        style={styles.input}
+        className="border border-border rounded-sm p-sm mb-sm font-regular"
         placeholder="Instructor Name"
-        value={selectedCourse?.instructor || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, instructor: text})}
+        value={selectedCourse?.instructor || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, instructor: text })
+        }
       />
-      
+
       <TextInput
-        style={styles.input}
+        className="border border-border rounded-sm p-sm mb-sm font-regular"
         placeholder="Category"
-        value={selectedCourse?.category || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, category: text})}
+        value={selectedCourse?.category || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, category: text })
+        }
       />
-      
+
       <TextInput
-        style={styles.input}
+        className="border border-border rounded-sm p-sm mb-sm font-regular"
         placeholder="Duration (e.g., 8 weeks)"
-        value={selectedCourse?.duration || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, duration: text})}
+        value={selectedCourse?.duration || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, duration: text })
+        }
       />
-      
+
       <TextInput
-        style={styles.input}
+        className="border border-border rounded-sm p-sm mb-sm font-regular"
         placeholder="Price"
-        value={selectedCourse?.price || ''}
-        onChangeText={(text) => setSelectedCourse({...selectedCourse, price: text})}
+        value={selectedCourse?.price || ""}
+        onChangeText={(text) =>
+          setSelectedCourse({ ...selectedCourse, price: text })
+        }
       />
-      
-      <View style={styles.formButtons}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveCourse}>
-          <Text style={styles.saveButtonText}>Save Course</Text>
+
+      {/* Buttons */}
+      <View className="flex-row mt-md">
+        <TouchableOpacity
+          className="flex-1 bg-primary py-sm rounded-sm items-center mr-sm"
+          onPress={handleSaveCourse}
+        >
+          <Text className="font-medium text-white">Save Course</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.cancelButton}
+        <TouchableOpacity
+          className="flex-1 bg-background py-sm rounded-sm items-center border border-border"
           onPress={() => {
             setSelectedCourse(null);
             setUploadedImage(null);
             setIsEditing(false);
           }}
         >
-          <Text style={styles.cancelButtonText}>Cancel</Text>
+          <Text className="font-medium text-textSecondary">Cancel</Text>
         </TouchableOpacity>
       </View>
     </Card>
   );
 
   return (
-    <View style={styles.container}>
-      <Header 
+    // <View style={styles.container}>
+    //   <Header
+    //     title="Course Management"
+    //     subtitle="Manage your courses"
+    //     showBack={true}
+    //     onBackPress={() => navigation.goBack()}
+    //     rightIcon="add-outline"
+    //     onRightPress={() => {
+    //       setSelectedCourse({});
+    //       setIsEditing(false);
+    //       setUploadedImage(null);
+    //     }}
+    //   />
+
+    //   <View style={styles.content}>
+    //     {/* Stats */}
+    //     <View style={styles.statsRow}>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>{courses.length}</Text>
+    //         <Text style={styles.statLabel}>Total Courses</Text>
+    //       </Card>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>
+    //           {courses.filter(c => c.status === 'published').length}
+    //         </Text>
+    //         <Text style={styles.statLabel}>Published</Text>
+    //       </Card>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>
+    //           {courses.reduce((sum, course) => sum + course.students, 0)}
+    //         </Text>
+    //         <Text style={styles.statLabel}>Total Students</Text>
+    //       </Card>
+    //     </View>
+
+    //     {/* Course Form or Course List */}
+    //     {selectedCourse ? (
+    //       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+    //         {renderCourseForm()}
+    //       </ScrollView>
+    //     ) : (
+    //       <FlatList
+    //         data={courses}
+    //         renderItem={renderCourseItem}
+    //         keyExtractor={item => item.id.toString()}
+    //         showsVerticalScrollIndicator={false}
+    //         contentContainerStyle={styles.listContainer}
+    //       />
+    //     )}
+    //   </View>
+    // </View>
+
+    <View className="flex-1 bg-background">
+      <Header
         title="Course Management"
         subtitle="Manage your courses"
         showBack={true}
@@ -360,281 +694,294 @@ const CourseManagementScreen = ({ navigation, route }) => {
           setUploadedImage(null);
         }}
       />
-      
-      <View style={styles.content}>
+
+      <View className="flex-1 p-md">
         {/* Stats */}
-        <View style={styles.statsRow}>
+        <View className="flex-row mb-lg">
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{courses.length}</Text>
-            <Text style={styles.statLabel}>Total Courses</Text>
-          </Card>
-          <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>
-              {courses.filter(c => c.status === 'published').length}
+            <Text className="font-bold text-xl text-primary">
+              {courses.length}
             </Text>
-            <Text style={styles.statLabel}>Published</Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Total Courses
+            </Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>
+            <Text className="font-bold text-xl text-primary">
+              {courses.filter((c) => c.status === "published").length}
+            </Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Published
+            </Text>
+          </Card>
+          <Card style={styles.statCard}>
+            <Text className="font-bold text-xl text-primary">
               {courses.reduce((sum, course) => sum + course.students, 0)}
             </Text>
-            <Text style={styles.statLabel}>Total Students</Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Total Students
+            </Text>
           </Card>
         </View>
-
+        
+        <View className="flex-1">
         {/* Course Form or Course List */}
         {selectedCourse ? (
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            className="flex-1 p-md"
+            showsVerticalScrollIndicator={false}
+          >
             {renderCourseForm()}
           </ScrollView>
         ) : (
-          <FlatList
+          <FlatList 
             data={courses}
             renderItem={renderCourseItem}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContainer}
+            contentContainerClassName="pb-lg"
           />
         )}
+      </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flex: 1,
-    padding: SPACING.md,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    marginBottom: SPACING.lg,
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: COLORS.background,
+  // },
+  // content: {
+  //   flex: 1,
+  //   padding: SPACING.md,
+  // },
+  // statsRow: {
+  //   flexDirection: "row",
+  //   marginBottom: SPACING.lg,
+  // },
   statCard: {
     flex: 1,
     marginHorizontal: SPACING.xs,
-    alignItems: 'center',
+    alignItems: "center",
     padding: SPACING.md,
   },
-  statNumber: {
-    ...FONTS.bold,
-    fontSize: SIZES.xl,
-    color: COLORS.primary,
-  },
-  statLabel: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
-  },
-  listContainer: {
-    paddingBottom: SPACING.lg,
-  },
-  courseCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: SIZES.radius,
-    marginBottom: SPACING.md,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  courseThumbnail: {
-    width: '100%',
-    height: 150,
-  },
-  courseContent: {
-    padding: SPACING.md,
-  },
-  courseHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.sm,
-  },
-  courseTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.textPrimary,
-    flex: 1,
-    marginRight: SPACING.sm,
-  },
-  statusBadge: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderRadius: SIZES.radius,
-  },
-  statusText: {
-    ...FONTS.medium,
-    fontSize: SIZES.xs,
-    color: COLORS.white,
-  },
-  courseDescription: {
-    ...FONTS.regular,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
-  },
-  courseMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.sm,
-  },
-  courseInstructor: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.primary,
-  },
-  courseCategory: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-  },
-  courseStats: {
-    flexDirection: 'row',
-    marginBottom: SPACING.sm,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: SPACING.md,
-  },
-  statText: {
-    ...FONTS.regular,
-    fontSize: SIZES.xs,
-    color: COLORS.textSecondary,
-    marginLeft: SPACING.xs,
-  },
-  courseFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  coursePrice: {
-    ...FONTS.bold,
-    fontSize: SIZES.md,
-    color: COLORS.primary,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    padding: SPACING.xs,
-    marginLeft: SPACING.xs,
-  },
-  formCard: {
-    marginBottom: SPACING.lg,
-  },
-  formTitle: {
-    ...FONTS.bold,
-    fontSize: SIZES.lg,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-  },
-  imageSection: {
-    marginBottom: SPACING.md,
-  },
-  sectionLabel: {
-    ...FONTS.medium,
-    fontSize: SIZES.md,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.sm,
-  },
-  uploadButton: {
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    borderStyle: 'dashed',
-    borderRadius: SIZES.radius,
-    padding: SPACING.xl,
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
-  },
-  uploadText: {
-    ...FONTS.medium,
-    fontSize: SIZES.md,
-    color: COLORS.primary,
-    marginTop: SPACING.sm,
-  },
-  uploadSubtext: {
-    ...FONTS.regular,
-    fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
-  },
-  imagePreviewContainer: {
-    position: 'relative',
-    borderRadius: SIZES.radius,
-    overflow: 'hidden',
-  },
-  imagePreview: {
-    width: '100%',
-    height: 200,
-    borderRadius: SIZES.radius,
-  },
-  changeImageButton: {
-    position: 'absolute',
-    bottom: SPACING.sm,
-    right: SPACING.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderRadius: SIZES.radius,
-  },
-  changeImageText: {
-    ...FONTS.medium,
-    fontSize: SIZES.sm,
-    color: COLORS.white,
-    marginLeft: SPACING.xs,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: SIZES.radius,
-    padding: SPACING.sm,
-    marginBottom: SPACING.sm,
-    ...FONTS.regular,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  formButtons: {
-    flexDirection: 'row',
-    marginTop: SPACING.md,
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.sm,
-    borderRadius: SIZES.radius,
-    alignItems: 'center',
-    marginRight: SPACING.sm,
-  },
-  saveButtonText: {
-    ...FONTS.medium,
-    color: COLORS.white,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    paddingVertical: SPACING.sm,
-    borderRadius: SIZES.radius,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  cancelButtonText: {
-    ...FONTS.medium,
-    color: COLORS.textSecondary,
-  },
+  // statNumber: {
+  //   ...FONTS.bold,
+  //   fontSize: SIZES.xl,
+  //   color: COLORS.primary,
+  // },
+  // statLabel: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.textSecondary,
+  //   marginTop: SPACING.xs,
+  // },
+  // listContainer: {
+  //   paddingBottom: SPACING.lg,
+  // },
+  // courseCard: {
+  //   backgroundColor: COLORS.white,
+  //   borderRadius: SIZES.radius,
+  //   marginBottom: SPACING.md,
+  //   overflow: "hidden",
+  //   elevation: 2,
+  //   shadowColor: COLORS.black,
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 4,
+  // },
+  // courseThumbnail: {
+  //   width: "100%",
+  //   height: 150,
+  // },
+  // courseContent: {
+  //   padding: SPACING.md,
+  // },
+  // courseHeader: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   alignItems: "flex-start",
+  //   marginBottom: SPACING.sm,
+  // },
+  // courseTitle: {
+  //   ...FONTS.bold,
+  //   fontSize: SIZES.lg,
+  //   color: COLORS.textPrimary,
+  //   flex: 1,
+  //   marginRight: SPACING.sm,
+  // },
+  // statusBadge: {
+  //   paddingHorizontal: SPACING.sm,
+  //   paddingVertical: SPACING.xs,
+  //   borderRadius: SIZES.radius,
+  // },
+  // statusText: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.xs,
+  //   color: COLORS.white,
+  // },
+  // courseDescription: {
+  //   ...FONTS.regular,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.textSecondary,
+  //   marginBottom: SPACING.sm,
+  // },
+  // courseMeta: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   marginBottom: SPACING.sm,
+  // },
+  // courseInstructor: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.primary,
+  // },
+  // courseCategory: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.textSecondary,
+  // },
+  // courseStats: {
+  //   flexDirection: "row",
+  //   marginBottom: SPACING.sm,
+  // },
+  // statItem: {
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   marginRight: SPACING.md,
+  // },
+  // statText: {
+  //   ...FONTS.regular,
+  //   fontSize: SIZES.xs,
+  //   color: COLORS.textSecondary,
+  //   marginLeft: SPACING.xs,
+  // },
+  // courseFooter: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   alignItems: "center",
+  // },
+  // coursePrice: {
+  //   ...FONTS.bold,
+  //   fontSize: SIZES.md,
+  //   color: COLORS.primary,
+  // },
+  // actionButtons: {
+  //   flexDirection: "row",
+  // },
+  // actionButton: {
+  //   padding: SPACING.xs,
+  //   marginLeft: SPACING.xs,
+  // },
+  // formCard: {
+  //   marginBottom: SPACING.lg,
+  // },
+  // formTitle: {
+  //   ...FONTS.bold,
+  //   fontSize: SIZES.lg,
+  //   color: COLORS.textPrimary,
+  //   marginBottom: SPACING.md,
+  // },
+  // imageSection: {
+  //   marginBottom: SPACING.md,
+  // },
+  // sectionLabel: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.md,
+  //   color: COLORS.textPrimary,
+  //   marginBottom: SPACING.sm,
+  // },
+  // uploadButton: {
+  //   borderWidth: 2,
+  //   borderColor: COLORS.border,
+  //   borderStyle: "dashed",
+  //   borderRadius: SIZES.radius,
+  //   padding: SPACING.xl,
+  //   alignItems: "center",
+  //   backgroundColor: COLORS.background,
+  // },
+  // uploadText: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.md,
+  //   color: COLORS.primary,
+  //   marginTop: SPACING.sm,
+  // },
+  // uploadSubtext: {
+  //   ...FONTS.regular,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.textSecondary,
+  //   marginTop: SPACING.xs,
+  // },
+  // imagePreviewContainer: {
+  //   position: "relative",
+  //   borderRadius: SIZES.radius,
+  //   overflow: "hidden",
+  // },
+  // imagePreview: {
+  //   width: "100%",
+  //   height: 200,
+  //   borderRadius: SIZES.radius,
+  // },
+  // changeImageButton: {
+  //   position: "absolute",
+  //   bottom: SPACING.sm,
+  //   right: SPACING.sm,
+  //   backgroundColor: "rgba(0, 0, 0, 0.7)",
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   paddingHorizontal: SPACING.sm,
+  //   paddingVertical: SPACING.xs,
+  //   borderRadius: SIZES.radius,
+  // },
+  // changeImageText: {
+  //   ...FONTS.medium,
+  //   fontSize: SIZES.sm,
+  //   color: COLORS.white,
+  //   marginLeft: SPACING.xs,
+  // },
+  // input: {
+  //   borderWidth: 1,
+  //   borderColor: COLORS.border,
+  //   borderRadius: SIZES.radius,
+  //   padding: SPACING.sm,
+  //   marginBottom: SPACING.sm,
+  //   ...FONTS.regular,
+  // },
+  // textArea: {
+  //   height: 100,
+  //   textAlignVertical: "top",
+  // },
+  // formButtons: {
+  //   flexDirection: "row",
+  //   marginTop: SPACING.md,
+  // },
+  // saveButton: {
+  //   flex: 1,
+  //   backgroundColor: COLORS.primary,
+  //   paddingVertical: SPACING.sm,
+  //   borderRadius: SIZES.radius,
+  //   alignItems: "center",
+  //   marginRight: SPACING.sm,
+  // },
+  // saveButtonText: {
+  //   ...FONTS.medium,
+  //   color: COLORS.white,
+  // },
+  // cancelButton: {
+  //   flex: 1,
+  //   backgroundColor: COLORS.background,
+  //   paddingVertical: SPACING.sm,
+  //   borderRadius: SIZES.radius,
+  //   alignItems: "center",
+  //   borderWidth: 1,
+  //   borderColor: COLORS.border,
+  // },
+  // cancelButtonText: {
+  //   ...FONTS.medium,
+  //   color: COLORS.textSecondary,
+  // },
 });
 
-export default CourseManagementScreen; 
+export default CourseManagementScreen;

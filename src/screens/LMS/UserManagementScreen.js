@@ -1,128 +1,386 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/common/Header';
-import Card from '../../components/common/Card';
-import { COLORS, SIZES, FONTS, SPACING } from '../../constants/theme';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Header from "../../components/common/Header";
+import Card from "../../components/common/Card";
+import { COLORS, SIZES, FONTS, SPACING } from "../../constants/theme";
 
 const UserManagementScreen = ({ navigation }) => {
-  const [selectedRole, setSelectedRole] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRole, setSelectedRole] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Mock user data
   const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'student', status: 'active', joinDate: '2024-01-01' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'instructor', status: 'active', joinDate: '2024-01-02' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'student', status: 'inactive', joinDate: '2024-01-03' },
-    { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'instructor', status: 'active', joinDate: '2024-01-04' },
-    { id: 5, name: 'David Brown', email: 'david@example.com', role: 'student', status: 'active', joinDate: '2024-01-05' },
-    { id: 6, name: 'Emily Davis', email: 'emily@example.com', role: 'student', status: 'active', joinDate: '2024-01-06' },
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john@example.com",
+      role: "student",
+      status: "active",
+      joinDate: "2024-01-01",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane@example.com",
+      role: "instructor",
+      status: "active",
+      joinDate: "2024-01-02",
+    },
+    {
+      id: 3,
+      name: "Mike Johnson",
+      email: "mike@example.com",
+      role: "student",
+      status: "inactive",
+      joinDate: "2024-01-03",
+    },
+    {
+      id: 4,
+      name: "Sarah Wilson",
+      email: "sarah@example.com",
+      role: "instructor",
+      status: "active",
+      joinDate: "2024-01-04",
+    },
+    {
+      id: 5,
+      name: "David Brown",
+      email: "david@example.com",
+      role: "student",
+      status: "active",
+      joinDate: "2024-01-05",
+    },
+    {
+      id: 6,
+      name: "Emily Davis",
+      email: "emily@example.com",
+      role: "student",
+      status: "active",
+      joinDate: "2024-01-06",
+    },
   ];
 
-  const filteredUsers = users.filter(user => {
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredUsers = users.filter((user) => {
+    const matchesRole = selectedRole === "all" || user.role === selectedRole;
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesRole && matchesSearch;
   });
 
+  // const renderUserItem = ({ item }) => (
+  //   <Card style={styles.userCard}>
+  //     <View style={styles.userHeader}>
+  //       <View style={styles.userInfo}>
+  //         <View style={styles.avatar}>
+  //           <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+  //         </View>
+  //         <View style={styles.userDetails}>
+  //           <Text style={styles.userName}>{item.name}</Text>
+  //           <Text style={styles.userEmail}>{item.email}</Text>
+  //           <Text style={styles.joinDate}>Joined: {item.joinDate}</Text>
+  //         </View>
+  //       </View>
+  //       <View style={styles.userActions}>
+  //         <View
+  //           style={[
+  //             styles.roleBadge,
+  //             {
+  //               backgroundColor:
+  //                 item.role === "instructor" ? COLORS.primary : COLORS.success,
+  //             },
+  //           ]}
+  //         >
+  //           <Text style={styles.roleText}>{item.role}</Text>
+  //         </View>
+  //         <View
+  //           style={[
+  //             styles.statusBadge,
+  //             {
+  //               backgroundColor:
+  //                 item.status === "active" ? COLORS.success : COLORS.error,
+  //             },
+  //           ]}
+  //         >
+  //           <Text style={styles.statusText}>{item.status}</Text>
+  //         </View>
+  //       </View>
+  //     </View>
+
+  //     <View style={styles.actionButtons}>
+  //       <TouchableOpacity
+  //         style={styles.actionButton}
+  //         onPress={() => navigation.navigate("EditUser", { userId: item.id })}
+  //       >
+  //         <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+  //         <Text style={styles.actionButtonText}>Edit</Text>
+  //       </TouchableOpacity>
+  //       <TouchableOpacity
+  //         style={[styles.actionButton, styles.deleteButton]}
+  //         onPress={() => handleDeleteUser(item.id)}
+  //       >
+  //         <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+  //         <Text style={[styles.actionButtonText, { color: COLORS.error }]}>
+  //           Delete
+  //         </Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   </Card>
+  // );
+
   const renderUserItem = ({ item }) => (
-    <Card style={styles.userCard}>
-      <View style={styles.userHeader}>
-        <View style={styles.userInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+    <View className="mb-md">
+      <Card className="mb-md">
+        {/* User Header */}
+        <View className="flex-row justify-between items-start mb-sm">
+          {/* User Info */}
+          <View className="flex-row flex-1">
+            {/* Avatar */}
+            <View className="w-[50px] h-[50px] rounded-[25px] bg-primary items-center justify-center mr-sm">
+              <Text className="font-bold text-lg text-white">
+                {item.name.charAt(0)}
+              </Text>
+            </View>
+
+            {/* User Details */}
+            <View className="flex-1">
+              <Text className="font-bold text-md text-textPrimary mb-xs">
+                {item.name}
+              </Text>
+              <Text className="font-regular text-sm text-textSecondary mb-xs">
+                {item.email}
+              </Text>
+              <Text className="font-regular text-xs text-textSecondary">
+                Joined: {item.joinDate}
+              </Text>
+            </View>
           </View>
-          <View style={styles.userDetails}>
-            <Text style={styles.userName}>{item.name}</Text>
-            <Text style={styles.userEmail}>{item.email}</Text>
-            <Text style={styles.joinDate}>Joined: {item.joinDate}</Text>
+
+          {/* User Actions (Badges) */}
+          <View className="items-end">
+            <View
+              className={`px-sm py-xs rounded-sm mb-xs ${
+                item.role === "instructor" ? "bg-primary" : "bg-success"
+              }`}
+            >
+              <Text className="font-medium text-xs text-white">
+                {item.role}
+              </Text>
+            </View>
+            <View
+              className={`px-sm py-xs rounded-sm ${
+                item.status === "active" ? "bg-success" : "bg-error"
+              }`}
+            >
+              <Text className="font-medium text-xs text-white">
+                {item.status}
+              </Text>
+            </View>
           </View>
         </View>
-        <View style={styles.userActions}>
-          <View style={[styles.roleBadge, { backgroundColor: item.role === 'instructor' ? COLORS.primary : COLORS.success }]}>
-            <Text style={styles.roleText}>{item.role}</Text>
-          </View>
-          <View style={[styles.statusBadge, { backgroundColor: item.status === 'active' ? COLORS.success : COLORS.error }]}>
-            <Text style={styles.statusText}>{item.status}</Text>
-          </View>
+
+        {/* Action Buttons */}
+        <View className="flex-row justify-end">
+          <TouchableOpacity
+            className="flex-row items-center px-md py-sm ml-sm rounded-sm bg-background"
+            onPress={() => navigation.navigate("EditUser", { userId: item.id })}
+          >
+            <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+            <Text className="font-medium text-sm text-primary ml-xs">Edit</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-row items-center px-md py-sm ml-sm rounded-sm bg-error/20"
+            onPress={() => handleDeleteUser(item.id)}
+          >
+            <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+            <Text className="font-medium text-sm ml-xs text-error">Delete</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-      
-      <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('EditUser', { userId: item.id })}>
-          <Ionicons name="create-outline" size={16} color={COLORS.primary} />
-          <Text style={styles.actionButtonText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={() => handleDeleteUser(item.id)}>
-          <Ionicons name="trash-outline" size={16} color={COLORS.error} />
-          <Text style={[styles.actionButtonText, { color: COLORS.error }]}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </Card>
+      </Card>
+    </View>
   );
 
   const handleDeleteUser = (userId) => {
     // Mock delete functionality
-    console.log('Delete user:', userId);
+    console.log("Delete user:", userId);
   };
 
   return (
-    <View style={styles.container}>
-      <Header 
+    // <View style={styles.container}>
+    //   <Header
+    //     title="User Management"
+    //     subtitle="Manage platform users"
+    //     showBack={true}
+    //     onBackPress={() => navigation.goBack()}
+    //     rightIcon="add-outline"
+    //     onRightPress={() => navigation.navigate('AddUser')}
+    //   />
+
+    //   <View style={styles.content}>
+    //     {/* Search and Filter */}
+    //     <Card style={styles.filterCard}>
+    //       <TextInput
+    //         style={styles.searchInput}
+    //         placeholder="Search users..."
+    //         value={searchQuery}
+    //         onChangeText={setSearchQuery}
+    //       />
+
+    //       <View style={styles.roleFilter}>
+    //         <TouchableOpacity
+    //           style={[styles.filterButton, selectedRole === 'all' && styles.activeFilterButton]}
+    //           onPress={() => setSelectedRole('all')}
+    //         >
+    //           <Text style={[styles.filterButtonText, selectedRole === 'all' && styles.activeFilterButtonText]}>All</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity
+    //           style={[styles.filterButton, selectedRole === 'student' && styles.activeFilterButton]}
+    //           onPress={() => setSelectedRole('student')}
+    //         >
+    //           <Text style={[styles.filterButtonText, selectedRole === 'student' && styles.activeFilterButtonText]}>Students</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity
+    //           style={[styles.filterButton, selectedRole === 'instructor' && styles.activeFilterButton]}
+    //           onPress={() => setSelectedRole('instructor')}
+    //         >
+    //           <Text style={[styles.filterButtonText, selectedRole === 'instructor' && styles.activeFilterButtonText]}>Instructors</Text>
+    //         </TouchableOpacity>
+    //       </View>
+    //     </Card>
+
+    //     {/* Stats */}
+    //     <View style={styles.statsRow}>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>{users.filter(u => u.role === 'student').length}</Text>
+    //         <Text style={styles.statLabel}>Students</Text>
+    //       </Card>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>{users.filter(u => u.role === 'instructor').length}</Text>
+    //         <Text style={styles.statLabel}>Instructors</Text>
+    //       </Card>
+    //       <Card style={styles.statCard}>
+    //         <Text style={styles.statNumber}>{users.filter(u => u.status === 'active').length}</Text>
+    //         <Text style={styles.statLabel}>Active</Text>
+    //       </Card>
+    //     </View>
+
+    //     {/* Users List */}
+    //     <FlatList
+    //       data={filteredUsers}
+    //       renderItem={renderUserItem}
+    //       keyExtractor={item => item.id.toString()}
+    //       showsVerticalScrollIndicator={false}
+    //       contentContainerStyle={styles.listContainer}
+    //     />
+    //   </View>
+    // </View>
+
+    <View className="flex-1 bg-background">
+      <Header
         title="User Management"
         subtitle="Manage platform users"
         showBack={true}
         onBackPress={() => navigation.goBack()}
         rightIcon="add-outline"
-        onRightPress={() => navigation.navigate('AddUser')}
+        onRightPress={() => navigation.navigate("AddUser")}
       />
-      
-      <View style={styles.content}>
-        {/* Search and Filter */}
-        <Card style={styles.filterCard}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search users..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          
-          <View style={styles.roleFilter}>
-            <TouchableOpacity 
-              style={[styles.filterButton, selectedRole === 'all' && styles.activeFilterButton]} 
-              onPress={() => setSelectedRole('all')}
-            >
-              <Text style={[styles.filterButtonText, selectedRole === 'all' && styles.activeFilterButtonText]}>All</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.filterButton, selectedRole === 'student' && styles.activeFilterButton]} 
-              onPress={() => setSelectedRole('student')}
-            >
-              <Text style={[styles.filterButtonText, selectedRole === 'student' && styles.activeFilterButtonText]}>Students</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.filterButton, selectedRole === 'instructor' && styles.activeFilterButton]} 
-              onPress={() => setSelectedRole('instructor')}
-            >
-              <Text style={[styles.filterButtonText, selectedRole === 'instructor' && styles.activeFilterButtonText]}>Instructors</Text>
-            </TouchableOpacity>
-          </View>
-        </Card>
+
+      <View className="flex-1 p-md">
+        <View className="mb-lg">
+          {/* Search and Filter */}
+          <Card className="mb-lg">
+            <TextInput
+              className="border border-border rounded-sm p-sm mb-md font-regular"
+              placeholder="Search users..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+
+            <View className="flex-row">
+              <TouchableOpacity
+                className={`flex-1 py-sm px-md mx-xs rounded-sm items-center ${
+                  selectedRole === "all" ? "bg-primary" : "bg-background"
+                }`}
+                onPress={() => setSelectedRole("all")}
+              >
+                <Text
+                  className={`font-medium text-textSecondary ${
+                    selectedRole === "all" ? "text-white" : ""
+                  }`}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`flex-1 py-sm px-md mx-xs rounded-sm items-center ${
+                  selectedRole === "student" ? "bg-primary" : "bg-background"
+                }`}
+                onPress={() => setSelectedRole("student")}
+              >
+                <Text
+                  className={`font-medium text-textSecondary ${
+                    selectedRole === "student" ? "text-white" : ""
+                  }`}
+                >
+                  Students
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`flex-1 py-sm px-md mx-xs rounded-sm items-center ${
+                  selectedRole === "instructor" ? "bg-primary" : "bg-background"
+                }`}
+                onPress={() => setSelectedRole("instructor")}
+              >
+                <Text
+                  className={`font-medium text-textSecondary ${
+                    selectedRole === "instructor" ? "text-white" : ""
+                  }`}
+                >
+                  Instructors
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        </View>
 
         {/* Stats */}
-        <View style={styles.statsRow}>
+        <View className="flex-row mb-lg">
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{users.filter(u => u.role === 'student').length}</Text>
-            <Text style={styles.statLabel}>Students</Text>
+            <Text className="font-bold text-xl text-primary">
+              {users.filter((u) => u.role === "student").length}
+            </Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Students
+            </Text>
           </Card>
+
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{users.filter(u => u.role === 'instructor').length}</Text>
-            <Text style={styles.statLabel}>Instructors</Text>
+            <Text className="font-bold text-xl text-primary">
+              {users.filter((u) => u.role === "instructor").length}
+            </Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Instructors
+            </Text>
           </Card>
+
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{users.filter(u => u.status === 'active').length}</Text>
-            <Text style={styles.statLabel}>Active</Text>
+            <Text className="font-bold text-xl text-primary">
+              {users.filter((u) => u.status === "active").length}
+            </Text>
+            <Text className="font-medium text-sm text-textSecondary mt-xs">
+              Active
+            </Text>
           </Card>
         </View>
 
@@ -130,9 +388,9 @@ const UserManagementScreen = ({ navigation }) => {
         <FlatList
           data={filteredUsers}
           renderItem={renderUserItem}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
+          contentContainerClassName="pb-lg"
         />
       </View>
     </View>
@@ -160,7 +418,7 @@ const styles = StyleSheet.create({
     ...FONTS.regular,
   },
   roleFilter: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   filterButton: {
     flex: 1,
@@ -168,7 +426,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     marginHorizontal: SPACING.xs,
     borderRadius: SIZES.radius,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: COLORS.background,
   },
   activeFilterButton: {
@@ -182,13 +440,13 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   statsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.lg,
   },
   statCard: {
     flex: 1,
     marginHorizontal: SPACING.xs,
-    alignItems: 'center',
+    alignItems: "center",
     padding: SPACING.md,
   },
   statNumber: {
@@ -209,13 +467,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   userHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: SPACING.sm,
   },
   userInfo: {
-    flexDirection: 'row',
+    flexDirection: "row",
     flex: 1,
   },
   avatar: {
@@ -223,8 +481,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: SPACING.sm,
   },
   avatarText: {
@@ -253,7 +511,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   userActions: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   roleBadge: {
     paddingHorizontal: SPACING.sm,
@@ -277,12 +535,12 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     marginLeft: SPACING.sm,
@@ -290,7 +548,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   deleteButton: {
-    backgroundColor: COLORS.error + '20',
+    backgroundColor: COLORS.error + "20",
   },
   actionButtonText: {
     ...FONTS.medium,
@@ -300,4 +558,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserManagementScreen; 
+export default UserManagementScreen;
